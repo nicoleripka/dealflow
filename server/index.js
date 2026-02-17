@@ -13,7 +13,7 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 // ── Database Setup ──────────────────────────────────────────────────
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL?.includes('railway') ? { rejectUnauthorized: false } : false
+  ssl: process.env.DATABASE_URL?.includes('render.com') ? { rejectUnauthorized: false } : false
 });
 
 async function initDb() {
@@ -31,7 +31,6 @@ async function initDb() {
       created_at TIMESTAMPTZ DEFAULT NOW(),
       updated_at TIMESTAMPTZ DEFAULT NOW()
     );
-
     CREATE TABLE IF NOT EXISTS people (
       id SERIAL PRIMARY KEY,
       name TEXT NOT NULL,
@@ -46,7 +45,6 @@ async function initDb() {
       created_at TIMESTAMPTZ DEFAULT NOW(),
       updated_at TIMESTAMPTZ DEFAULT NOW()
     );
-
     CREATE TABLE IF NOT EXISTS interactions (
       id SERIAL PRIMARY KEY,
       company_id INTEGER REFERENCES companies(id),
@@ -56,7 +54,6 @@ async function initDb() {
       raw_input TEXT,
       created_at TIMESTAMPTZ DEFAULT NOW()
     );
-
     CREATE TABLE IF NOT EXISTS intake_log (
       id SERIAL PRIMARY KEY,
       raw_text TEXT NOT NULL,
@@ -133,7 +130,6 @@ function basicParse(rawText) {
   const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 1);
   const companies = [];
   const people = [];
-
   for (const line of lines) {
     if (line.endsWith(':') || line.startsWith('#') || line.startsWith('—')) continue;
     const parts = line.split(/[,\-–—]/);
@@ -162,36 +158,23 @@ function basicParse(rawText) {
 
 // ── API Routes ──────────────────────────────────────────────────────
 
-// --- Companies ---
 app.get('/api/companies', async (req, res) => {
   const { stage, search, sort = 'created_at', order = 'DESC' } = req.query;
-  let query = 'SELECT * FROM companies WHERE 1=1';
+  let sql = 'SELECT * FROM companies WHERE 1=1';
   const params = [];
-  let paramIdx = 1;
-
-  if (stage && stage !== 'all') {
-    query += ` AND stage = $${paramIdx++}`;
-    params.push(stage);
-  }
-  if (search) {
-    query += ` AND (name ILIKE $${paramIdx} OR description ILIKE $${paramIdx} OR investors ILIKE $${paramIdx} OR notes ILIKE $${paramIdx})`;
-    params.push(`%${search}%`);
-    paramIdx++;
-  }
-
+  let i = 1;
+  if (stage && stage !== 'all') { sql += ` AND stage = $${i++}`; params.push(stage); }
+  if (search) { sql += ` AND (name ILIKE $${i} OR description ILIKE $${i} OR investors ILIKE $${i} OR notes ILIKE $${i})`; params.push(`%${search}%`); i++; }
   const allowedSorts = ['created_at', 'updated_at', 'name', 'stage'];
   const sortCol = allowedSorts.includes(sort) ? sort : 'created_at';
-  const sortOrder = order === 'ASC' ? 'ASC' : 'DESC';
-  query += ` ORDER BY ${sortCol} ${sortOrder}`;
-
-  const { rows } = await pool.query(query, params);
+  sql += ` ORDER BY ${sortCol} ${order === 'ASC' ? 'ASC' : 'DESC'}`;
+  const { rows } = await pool.query(sql, params);
   res.json(rows);
 });
 
 app.get('/api/companies/:id', async (req, res) => {
   const { rows: [row] } = await pool.query('SELECT * FROM companies WHERE id = $1', [req.params.id]);
   if (!row) return res.status(404).json({ error: 'Not found' });
-
   const { rows: people } = await pool.query('SELECT * FROM people WHERE company_id = $1', [req.params.id]);
   const { rows: interactions } = await pool.query('SELECT * FROM interactions WHERE company_id = $1 ORDER BY created_at DESC', [req.params.id]);
   res.json({ ...row, people, interactions });
@@ -220,25 +203,15 @@ app.delete('/api/companies/:id', async (req, res) => {
   res.json({ ok: true });
 });
 
-// --- People ---
 app.get('/api/people', async (req, res) => {
   const { search, relationship } = req.query;
-  let query = 'SELECT p.*, c.name as company_name FROM people p LEFT JOIN companies c ON p.company_id = c.id WHERE 1=1';
+  let sql = 'SELECT p.*, c.name as company_name FROM people p LEFT JOIN companies c ON p.company_id = c.id WHERE 1=1';
   const params = [];
-  let paramIdx = 1;
-
-  if (relationship && relationship !== 'all') {
-    query += ` AND p.relationship = $${paramIdx++}`;
-    params.push(relationship);
-  }
-  if (search) {
-    query += ` AND (p.name ILIKE $${paramIdx} OR p.email ILIKE $${paramIdx} OR p.title ILIKE $${paramIdx} OR p.notes ILIKE $${paramIdx})`;
-    params.push(`%${search}%`);
-    paramIdx++;
-  }
-
-  query += ' ORDER BY p.created_at DESC';
-  const { rows } = await pool.query(query, params);
+  let i = 1;
+  if (relationship && relationship !== 'all') { sql += ` AND p.relationship = $${i++}`; params.push(relationship); }
+  if (search) { sql += ` AND (p.name ILIKE $${i} OR p.email ILIKE $${i} OR p.title ILIKE $${i} OR p.notes ILIKE $${i})`; params.push(`%${search}%`); i++; }
+  sql += ' ORDER BY p.created_at DESC';
+  const { rows } = await pool.query(sql, params);
   res.json(rows);
 });
 
@@ -265,91 +238,56 @@ app.delete('/api/people/:id', async (req, res) => {
   res.json({ ok: true });
 });
 
-// --- Intake (the magic endpoint) ---
 app.post('/api/intake', async (req, res) => {
   const { text, source = 'manual' } = req.body;
   if (!text) return res.status(400).json({ error: 'No text provided' });
-
-  const { rows: [log] } = await pool.query(
-    'INSERT INTO intake_log (raw_text, source) VALUES ($1, $2) RETURNING id',
-    [text, source]
-  );
-
+  const { rows: [log] } = await pool.query('INSERT INTO intake_log (raw_text, source) VALUES ($1, $2) RETURNING id', [text, source]);
   const parsed = await parseWithClaude(text);
-
-  await pool.query('UPDATE intake_log SET parsed_json = $1, status = $2 WHERE id = $3',
-    [JSON.stringify(parsed), 'parsed', log.id]);
-
+  await pool.query('UPDATE intake_log SET parsed_json = $1, status = $2 WHERE id = $3', [JSON.stringify(parsed), 'parsed', log.id]);
   const created = { companies: [], people: [] };
-
   for (const co of (parsed.companies || [])) {
     const { rows: existing } = await pool.query('SELECT id FROM companies WHERE LOWER(name) = LOWER($1)', [co.name]);
-    if (existing.length > 0) {
-      created.companies.push({ ...co, id: existing[0].id, status: 'duplicate' });
-      continue;
-    }
-
+    if (existing.length > 0) { created.companies.push({ ...co, id: existing[0].id, status: 'duplicate' }); continue; }
     const { rows: [newCo] } = await pool.query(
       'INSERT INTO companies (name, description, stage, source, investors) VALUES ($1,$2,$3,$4,$5) RETURNING id',
       [co.name, co.description || null, co.stage || 'tracking', co.source || source, co.investors || null]
     );
-
     created.companies.push({ ...co, id: newCo.id, status: 'created' });
-
     for (const founder of (co.founders || [])) {
       const { rows: ep } = await pool.query('SELECT id FROM people WHERE LOWER(name) = LOWER($1)', [founder]);
       if (ep.length === 0) {
-        await pool.query(
-          'INSERT INTO people (name, company_id, relationship, source) VALUES ($1,$2,$3,$4)',
-          [founder, newCo.id, 'new', source]
-        );
+        await pool.query('INSERT INTO people (name, company_id, relationship, source) VALUES ($1,$2,$3,$4)', [founder, newCo.id, 'new', source]);
       }
     }
   }
-
   for (const person of (parsed.people || [])) {
     const { rows: existing } = await pool.query('SELECT id FROM people WHERE LOWER(name) = LOWER($1)', [person.name]);
-    if (existing.length > 0) {
-      created.people.push({ ...person, id: existing[0].id, status: 'duplicate' });
-      continue;
-    }
-
+    if (existing.length > 0) { created.people.push({ ...person, id: existing[0].id, status: 'duplicate' }); continue; }
     let companyId = null;
     if (person.company) {
       const { rows: co } = await pool.query('SELECT id FROM companies WHERE LOWER(name) = LOWER($1)', [person.company]);
       if (co.length > 0) companyId = co[0].id;
     }
-
-    const { rows: [newPerson] } = await pool.query(
+    const { rows: [np] } = await pool.query(
       'INSERT INTO people (name, title, company_id, relationship, source) VALUES ($1,$2,$3,$4,$5) RETURNING id',
       [person.name, person.title || null, companyId, person.relationship || 'new', source]
     );
-    created.people.push({ ...person, id: newPerson.id, status: 'created' });
+    created.people.push({ ...person, id: np.id, status: 'created' });
   }
-
   await pool.query('UPDATE intake_log SET status = $1 WHERE id = $2', ['completed', log.id]);
   res.json({ parsed, created });
 });
 
-// --- Email Intake ---
 app.post('/api/intake/email', async (req, res) => {
   const text = req.body.text || req.body['stripped-text'] || req.body.plain || '';
   const subject = req.body.subject || '';
   const from = req.body.from || req.body.sender || '';
-
   const fullText = `${subject}\n${text}`.trim();
   if (!fullText) return res.status(400).json({ error: 'No content' });
-
   try {
-    const { rows: [log] } = await pool.query(
-      'INSERT INTO intake_log (raw_text, source) VALUES ($1, $2) RETURNING id',
-      [fullText, `email:${from}`]
-    );
-
+    const { rows: [log] } = await pool.query('INSERT INTO intake_log (raw_text, source) VALUES ($1, $2) RETURNING id', [fullText, `email:${from}`]);
     const parsed = await parseWithClaude(fullText);
-    await pool.query('UPDATE intake_log SET parsed_json = $1, status = $2 WHERE id = $3',
-      [JSON.stringify(parsed), 'parsed', log.id]);
-
+    await pool.query('UPDATE intake_log SET parsed_json = $1, status = $2 WHERE id = $3', [JSON.stringify(parsed), 'parsed', log.id]);
     const created = { companies: [], people: [] };
     for (const co of (parsed.companies || [])) {
       const { rows: existing } = await pool.query('SELECT id FROM companies WHERE LOWER(name) = LOWER($1)', [co.name]);
@@ -369,14 +307,11 @@ app.post('/api/intake/email', async (req, res) => {
           const { rows: co } = await pool.query('SELECT id FROM companies WHERE LOWER(name) = LOWER($1)', [person.company]);
           if (co.length > 0) companyId = co[0].id;
         }
-        await pool.query(
-          'INSERT INTO people (name, title, company_id, relationship, source) VALUES ($1,$2,$3,$4,$5)',
-          [person.name, person.title || null, companyId, person.relationship || 'new', `email:${from}`]
-        );
+        await pool.query('INSERT INTO people (name, title, company_id, relationship, source) VALUES ($1,$2,$3,$4,$5)',
+          [person.name, person.title || null, companyId, person.relationship || 'new', `email:${from}`]);
         created.people.push(person);
       }
     }
-
     await pool.query('UPDATE intake_log SET status = $1 WHERE id = $2', ['completed', log.id]);
     res.json({ ok: true, created });
   } catch (err) {
@@ -385,42 +320,20 @@ app.post('/api/intake/email', async (req, res) => {
   }
 });
 
-// --- Airtable Sync ---
 app.post('/api/sync/airtable', async (req, res) => {
   const baseId = process.env.AIRTABLE_BASE_ID;
   const apiKey = process.env.AIRTABLE_API_KEY;
   const tableName = process.env.AIRTABLE_TABLE_NAME || 'Companies';
-
-  if (!baseId || !apiKey) {
-    return res.status(400).json({ error: 'Airtable not configured. Set AIRTABLE_BASE_ID and AIRTABLE_API_KEY in .env' });
-  }
-
+  if (!baseId || !apiKey) return res.status(400).json({ error: 'Airtable not configured' });
   const { rows: companies } = await pool.query('SELECT * FROM companies ORDER BY created_at DESC');
   const results = [];
-
   for (const co of companies) {
     try {
-      const airtableRes = await fetch(
-        `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${apiKey}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            fields: {
-              'Name': co.name,
-              'Description': co.description || '',
-              'Stage': co.stage || 'tracking',
-              'Source': co.source || '',
-              'Investors': co.investors || '',
-              'Notes': co.notes || '',
-              'Added': co.created_at
-            }
-          })
-        }
-      );
+      const airtableRes = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fields: { 'Name': co.name, 'Description': co.description || '', 'Stage': co.stage || 'tracking', 'Source': co.source || '', 'Investors': co.investors || '', 'Notes': co.notes || '', 'Added': co.created_at } })
+      });
       const data = await airtableRes.json();
       results.push({ company: co.name, status: 'synced', airtable_id: data.id });
     } catch (err) {
@@ -430,7 +343,6 @@ app.post('/api/sync/airtable', async (req, res) => {
   res.json({ synced: results });
 });
 
-// --- Stats ---
 app.get('/api/stats', async (req, res) => {
   const [tc, tp, bs, ri, tw] = await Promise.all([
     pool.query('SELECT COUNT(*) as count FROM companies'),
@@ -439,7 +351,6 @@ app.get('/api/stats', async (req, res) => {
     pool.query("SELECT COUNT(*) as count FROM intake_log WHERE created_at > NOW() - INTERVAL '7 days'"),
     pool.query("SELECT COUNT(*) as count FROM companies WHERE created_at > NOW() - INTERVAL '7 days'")
   ]);
-
   res.json({
     totalCompanies: parseInt(tc.rows[0].count),
     totalPeople: parseInt(tp.rows[0].count),
@@ -449,24 +360,16 @@ app.get('/api/stats', async (req, res) => {
   });
 });
 
-// --- Intake Log ---
 app.get('/api/intake-log', async (req, res) => {
   const { rows } = await pool.query('SELECT * FROM intake_log ORDER BY created_at DESC LIMIT 50');
   res.json(rows);
 });
 
-// SPA fallback
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
-
 initDb().then(() => {
-  app.listen(PORT, () => {
-    console.log(`\n  ⚡ DealFlow running at http://localhost:${PORT}\n`);
-  });
-}).catch(err => {
-  console.error('Failed to initialize database:', err);
-  process.exit(1);
-});
+  app.listen(PORT, () => { console.log(`\n  ⚡ DealFlow running on port ${PORT}\n`); });
+}).catch(err => { console.error('DB init failed:', err); process.exit(1); });
