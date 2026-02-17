@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DealFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0b;
+      --surface: #141416;
+      --surface-2: #1c1c20;
+      --surface-3: #242428;
+      --border: #2a2a30;
+      --border-light: #3a3a42;
+      --text: #e8e8ed;
+      --text-dim: #8a8a96;
+      --text-muted: #5a5a66;
+      --accent: #4ade80;
+      --accent-dim: #22863a;
+      --accent-glow: rgba(74, 222, 128, 0.08);
+      --orange: #fb923c;
+      --blue: #60a5fa;
+      --purple: #a78bfa;
+      --red: #f87171;
+      --yellow: #fbbf24;
+      --pink: #f472b6;
+      --radius: 10px;
+      --radius-sm: 6px;
+      --transition: 150ms ease;
+    }
+
+    body {
+      font-family: 'DM Sans', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Layout ─────────────────────────────────────── */
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 240px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+    }
+
+    .sidebar-logo {
+      padding: 0 24px;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sidebar-logo .mark {
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--bg);
+      font-size: 14px;
+    }
+
+    .sidebar-logo .wordmark {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-section {
+      padding: 0 12px;
+      margin-bottom: 24px;
+    }
+
+    .nav-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      padding: 0 12px;
+      margin-bottom: 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all var(--transition);
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+
+    .nav-item:hover {
+      background: var(--surface-2);
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: var(--accent-glow);
+      color: var(--accent);
+    }
+
+    .nav-item .icon {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .nav-item .badge {
+      margin-left: auto;
+      background: var(--surface-3);
+      color: var(--text-dim);
+      font-size: 11px;
+      padding: 1px 7px;
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .nav-item.active .badge {
+      background: var(--accent-dim);
+      color: var(--accent);
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sidebar-footer-text {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .main {
+      margin-left: 240px;
+      flex: 1;
+      padding: 32px 40px;
+      max-width: 1200px;
+    }
+
+    /* ── Page Header ────────────────────────────────── */
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .page-subtitle {
+      font-size: 14px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    /* ── Buttons ─────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all var(--transition);
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+    }
+
+    .btn:hover { background: var(--surface-3); border-color: var(--border-light); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+    }
+
+    .btn-primary:hover { opacity: 0.9; }
+
+    .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+    .btn-ghost {
+      background: none;
+      border-color: transparent;
+      color: var(--text-dim);
+    }
+
+    .btn-ghost:hover { color: var(--text); background: var(--surface-2); }
+
+    .btn-danger { color: var(--red); }
+    .btn-danger:hover { background: rgba(248, 113, 113, 0.1); border-color: var(--red); }
+
+    /* ── Inputs ──────────────────────────────────────── */
+    input, textarea, select {
+      font-family: inherit;
+      font-size: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      padding: 8px 12px;
+      transition: all var(--transition);
+      width: 100%;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    textarea { resize: vertical; min-height: 100px; }
+
+    select { cursor: pointer; }
+
+    .input-group { margin-bottom: 16px; }
+
+    .input-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Search Bar ──────────────────────────────────── */
+    .search-bar {
+      position: relative;
+      max-width: 320px;
+    }
+
+    .search-bar input {
+      padding-left: 36px;
+      background: var(--surface);
+    }
+
+    .search-bar .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* ── Filters ─────────────────────────────────────── */
+    .filters {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-chip {
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-dim);
+      transition: all var(--transition);
+    }
+
+    .filter-chip:hover { border-color: var(--border-light); color: var(--text); }
+
+    .filter-chip.active {
+      background: var(--accent-glow);
+      border-color: var(--accent-dim);
+      color: var(--accent);
+    }
+
+    /* ── Cards ────────────────────────────────────────── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .stat-card .label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+
+    .stat-card .value {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .stat-card .sub {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    /* ── Table ────────────────────────────────────────── */
+    .table-wrapper {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 12px 16px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tr:hover td { background: var(--surface-2); }
+
+    .company-name {
+      font-weight: 600;
+      cursor: pointer;
+      transition: color var(--transition);
+    }
+
+    .company-name:hover { color: var(--accent); }
+
+    /* ── Stage Badges ────────────────────────────────── */
+    .stage {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .stage-tracking { background: rgba(96, 165, 250, 0.12); color: var(--blue); }
+    .stage-meeting_scheduled { background: rgba(251, 146, 60, 0.12); color: var(--orange); }
+    .stage-considering { background: rgba(167, 139, 250, 0.12); color: var(--purple); }
+    .stage-passed { background: rgba(138, 138, 150, 0.12); color: var(--text-dim); }
+    .stage-invested { background: rgba(74, 222, 128, 0.12); color: var(--accent); }
+
+    .relationship {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .relationship-new { background: rgba(96, 165, 250, 0.12); color: var(--blue); }
+    .relationship-met { background: rgba(251, 146, 60, 0.12); color: var(--orange); }
+    .relationship-in_touch { background: rgba(167, 139, 250, 0.12); color: var(--purple); }
+    .relationship-close { background: rgba(74, 222, 128, 0.12); color: var(--accent); }
+
+    /* ── Modal ────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 200ms ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      width: 540px;
+      max-width: 90vw;
+      max-height: 85vh;
+      overflow-y: auto;
+      transform: translateY(10px);
+      transition: transform 200ms ease;
+    }
+
+    .modal-overlay.open .modal { transform: translateY(0); }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-header h2 {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .modal-body { padding: 24px; }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    /* ── Intake Area ─────────────────────────────────── */
+    .intake-zone {
+      background: var(--surface);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 40px;
+      text-align: center;
+      transition: all var(--transition);
+      margin-bottom: 24px;
+    }
+
+    .intake-zone:hover, .intake-zone.active {
+      border-color: var(--accent-dim);
+      background: var(--accent-glow);
+    }
+
+    .intake-zone h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .intake-zone p {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+    }
+
+    .intake-textarea {
+      width: 100%;
+      min-height: 160px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      font-size: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text);
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .intake-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .intake-results {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 16px;
+    }
+
+    .intake-results h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--accent);
+    }
+
+    .intake-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    .intake-item:last-child { border-bottom: none; }
+
+    .intake-item .check { color: var(--accent); }
+    .intake-item .dupe { color: var(--yellow); }
+
+    /* ── Detail Panel ────────────────────────────────── */
+    .detail-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    .detail-panel h2 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .detail-meta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .detail-meta-item {
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    .detail-meta-item strong {
+      color: var(--text);
+    }
+
+    .detail-section {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .detail-section h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    /* ── Empty State ──────────────────────────────────── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-dim);
+    }
+
+    .empty-state .icon { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
+    .empty-state h3 { font-size: 16px; margin-bottom: 8px; color: var(--text); }
+    .empty-state p { font-size: 14px; max-width: 400px; margin: 0 auto; }
+
+    /* ── Loading ──────────────────────────────────────── */
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 600ms linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-bar {
+      height: 2px;
+      background: var(--accent);
+      position: fixed;
+      top: 0;
+      left: 240px;
+      right: 0;
+      z-index: 200;
+      transform-origin: left;
+      animation: loading 1.5s ease-in-out infinite;
+    }
+
+    @keyframes loading {
+      0% { transform: scaleX(0); }
+      50% { transform: scaleX(0.7); }
+      100% { transform: scaleX(1); opacity: 0; }
+    }
+
+    /* ── Toast ────────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 20px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 2000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 300ms ease;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* ── Responsive ───────────────────────────────────── */
+    @media (max-width: 768px) {
+      .sidebar { width: 60px; padding: 16px 0; }
+      .sidebar-logo .wordmark { display: none; }
+      .nav-label { display: none; }
+      .nav-item span:not(.icon) { display: none; }
+      .nav-item .badge { display: none; }
+      .main { margin-left: 60px; padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-logo">
+        <div class="mark">D</div>
+        <span class="wordmark">DealFlow</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Overview</div>
+        <button class="nav-item active" data-page="dashboard">
+          <span class="icon">◉</span>
+          <span>Dashboard</span>
+        </button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Database</div>
+        <button class="nav-item" data-page="companies">
+          <span class="icon">◆</span>
+          <span>Companies</span>
+          <span class="badge" id="company-count">0</span>
+        </button>
+        <button class="nav-item" data-page="people">
+          <span class="icon">●</span>
+          <span>People</span>
+          <span class="badge" id="people-count">0</span>
+        </button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Tools</div>
+        <button class="nav-item" data-page="intake">
+          <span class="icon">⚡</span>
+          <span>Quick Add</span>
+        </button>
+        <button class="nav-item" data-page="settings">
+          <span class="icon">⚙</span>
+          <span>Settings</span>
+        </button>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-text">v1.0 · self-hosted</div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main" id="main-content">
+      <!-- Dynamically rendered -->
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal">
+      <div class="modal-header">
+        <h2 id="modal-title"></h2>
+        <button class="btn btn-ghost btn-sm" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-footer" id="modal-footer"></div>
+    </div>
+  </div>
+
+  <script>
+    // ── State ─────────────────────────────────────────
+    const state = {
+      page: 'dashboard',
+      companies: [],
+      people: [],
+      stats: {},
+      loading: false,
+      filters: {
+        companyStage: 'all',
+        companySearch: '',
+        peopleRelationship: 'all',
+        peopleSearch: ''
+      }
+    };
+
+    // ── API ───────────────────────────────────────────
+    const API = {
+      async get(path) {
+        const res = await fetch(`/api${path}`);
+        return res.json();
+      },
+      async post(path, data) {
+        const res = await fetch(`/api${path}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        return res.json();
+      },
+      async put(path, data) {
+        const res = await fetch(`/api${path}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        return res.json();
+      },
+      async del(path) {
+        const res = await fetch(`/api${path}`, { method: 'DELETE' });
+        return res.json();
+      }
+    };
+
+    // ── Data Loading ──────────────────────────────────
+    async function loadData() {
+      const [companies, people, stats] = await Promise.all([
+        API.get('/companies'),
+        API.get('/people'),
+        API.get('/stats')
+      ]);
+      state.companies = companies;
+      state.people = people;
+      state.stats = stats;
+      document.getElementById('company-count').textContent = companies.length;
+      document.getElementById('people-count').textContent = people.length;
+    }
+
+    // ── Navigation ────────────────────────────────────
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        state.page = item.dataset.page;
+        render();
+      });
+    });
+
+    // ── Toast ─────────────────────────────────────────
+    function showToast(msg, icon = '✓') {
+      const toast = document.getElementById('toast');
+      toast.innerHTML = `<span>${icon}</span> ${msg}`;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // ── Modal ─────────────────────────────────────────
+    function openModal(title, bodyHTML, footerHTML) {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-body').innerHTML = bodyHTML;
+      document.getElementById('modal-footer').innerHTML = footerHTML;
+      document.getElementById('modal-overlay').classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('open');
+    }
+
+    document.getElementById('modal-overlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+
+    // ── Rendering ─────────────────────────────────────
+    function render() {
+      const main = document.getElementById('main-content');
+      switch (state.page) {
+        case 'dashboard': main.innerHTML = renderDashboard(); break;
+        case 'companies': main.innerHTML = renderCompanies(); break;
+        case 'people': main.innerHTML = renderPeople(); break;
+        case 'intake': main.innerHTML = renderIntake(); break;
+        case 'settings': main.innerHTML = renderSettings(); break;
+        case 'company-detail': main.innerHTML = renderCompanyDetail(); break;
+        default: main.innerHTML = renderDashboard();
+      }
+      attachEventListeners();
+    }
+
+    function stageLabel(s) {
+      const labels = {
+        tracking: 'Tracking',
+        meeting_scheduled: 'Meeting',
+        considering: 'Considering',
+        passed: 'Passed',
+        invested: 'Invested'
+      };
+      return labels[s] || s;
+    }
+
+    function relLabel(r) {
+      const labels = { new: 'New', met: 'Met', in_touch: 'In Touch', close: 'Close' };
+      return labels[r] || r;
+    }
+
+    function timeAgo(dateStr) {
+      const now = new Date();
+      const d = new Date(dateStr);
+      const diff = Math.floor((now - d) / 1000);
+      if (diff < 60) return 'just now';
+      if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+      if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+      if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    // ── Dashboard ─────────────────────────────────────
+    function renderDashboard() {
+      const { stats } = state;
+      const stageMap = {};
+      (stats.byStage || []).forEach(s => stageMap[s.stage] = s.count);
+
+      const recentCompanies = state.companies.slice(0, 8);
+      const recentPeople = state.people.slice(0, 5);
+
+      return `
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-subtitle">Your deal flow at a glance</p>
+          </div>
+          <button class="btn btn-primary" onclick="state.page='intake';render();">
+            ⚡ Quick Add
+          </button>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="label">Companies</div>
+            <div class="value">${stats.totalCompanies || 0}</div>
+            <div class="sub">${stats.thisWeek || 0} added this week</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">People</div>
+            <div class="value">${stats.totalPeople || 0}</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Meetings</div>
+            <div class="value" style="color:var(--orange)">${stageMap.meeting_scheduled || 0}</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Considering</div>
+            <div class="value" style="color:var(--purple)">${stageMap.considering || 0}</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div>
+            <h3 style="font-size:14px;font-weight:600;margin-bottom:12px;color:var(--text-dim);">RECENT COMPANIES</h3>
+            <div class="table-wrapper">
+              <table>
+                <thead><tr><th>Name</th><th>Stage</th><th>Added</th></tr></thead>
+                <tbody>
+                  ${recentCompanies.length ? recentCompanies.map(c => `
+                    <tr>
+                      <td><span class="company-name" onclick="viewCompany(${c.id})">${esc(c.name)}</span></td>
+                      <td><span class="stage stage-${c.stage}">${stageLabel(c.stage)}</span></td>
+                      <td style="color:var(--text-dim);font-size:13px;">${timeAgo(c.created_at)}</td>
+                    </tr>
+                  `).join('') : '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:24px;">No companies yet. Use Quick Add to get started.</td></tr>'}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <h3 style="font-size:14px;font-weight:600;margin-bottom:12px;color:var(--text-dim);">RECENT PEOPLE</h3>
+            <div class="table-wrapper">
+              <table>
+                <thead><tr><th>Name</th><th>Company</th><th>Status</th></tr></thead>
+                <tbody>
+                  ${recentPeople.length ? recentPeople.map(p => `
+                    <tr>
+                      <td style="font-weight:500;">${esc(p.name)}</td>
+                      <td style="color:var(--text-dim);">${esc(p.company_name || '—')}</td>
+                      <td><span class="relationship relationship-${p.relationship}">${relLabel(p.relationship)}</span></td>
+                    </tr>
+                  `).join('') : '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:24px;">No people yet.</td></tr>'}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ── Companies Page ────────────────────────────────
+    function renderCompanies() {
+      const stages = ['all', 'tracking', 'meeting_scheduled', 'considering', 'passed', 'invested'];
+      const filtered = state.companies.filter(c => {
+        if (state.filters.companyStage !== 'all' && c.stage !== state.filters.companyStage) return false;
+        if (state.filters.companySearch) {
+          const s = state.filters.companySearch.toLowerCase();
+          return (c.name || '').toLowerCase().includes(s) ||
+                 (c.description || '').toLowerCase().includes(s) ||
+                 (c.investors || '').toLowerCase().includes(s);
+        }
+        return true;
+      });
+
+      return `
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Companies</h1>
+            <p class="page-subtitle">${state.companies.length} total</p>
+          </div>
+          <button class="btn btn-primary" onclick="openAddCompanyModal()">+ Add Company</button>
+        </div>
+
+        <div class="filters">
+          ${stages.map(s => `
+            <button class="filter-chip ${state.filters.companyStage === s ? 'active' : ''}"
+                    onclick="state.filters.companyStage='${s}';render();">
+              ${s === 'all' ? 'All' : stageLabel(s)}
+            </button>
+          `).join('')}
+          <div class="search-bar" style="margin-left:auto;">
+            <span class="search-icon">⌕</span>
+            <input type="text" placeholder="Search companies..."
+                   value="${esc(state.filters.companySearch)}"
+                   oninput="state.filters.companySearch=this.value;render();">
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Company</th><th>Stage</th><th>Source</th><th>Investors</th><th>Added</th><th></th></tr>
+            </thead>
+            <tbody>
+              ${filtered.length ? filtered.map(c => `
+                <tr>
+                  <td>
+                    <span class="company-name" onclick="viewCompany(${c.id})">${esc(c.name)}</span>
+                    ${c.description ? `<div style="font-size:12px;color:var(--text-dim);margin-top:2px;">${esc(c.description).substring(0, 60)}</div>` : ''}
+                  </td>
+                  <td><span class="stage stage-${c.stage}">${stageLabel(c.stage)}</span></td>
+                  <td style="color:var(--text-dim);font-size:13px;">${esc(c.source || '—')}</td>
+                  <td style="color:var(--text-dim);font-size:13px;">${esc(c.investors || '—')}</td>
+                  <td style="color:var(--text-dim);font-size:13px;">${timeAgo(c.created_at)}</td>
+                  <td>
+                    <button class="btn btn-ghost btn-sm" onclick="openEditCompanyModal(${c.id})">Edit</button>
+                    <button class="btn btn-ghost btn-sm btn-danger" onclick="deleteCompany(${c.id})">✕</button>
+                  </td>
+                </tr>
+              `).join('') : `
+                <tr><td colspan="6">
+                  <div class="empty-state">
+                    <div class="icon">◆</div>
+                    <h3>No companies found</h3>
+                    <p>Try adjusting your filters or add a company.</p>
+                  </div>
+                </td></tr>
+              `}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    // ── People Page ───────────────────────────────────
+    function renderPeople() {
+      const rels = ['all', 'new', 'met', 'in_touch', 'close'];
+      const filtered = state.people.filter(p => {
+        if (state.filters.peopleRelationship !== 'all' && p.relationship !== state.filters.peopleRelationship) return false;
+        if (state.filters.peopleSearch) {
+          const s = state.filters.peopleSearch.toLowerCase();
+          return (p.name || '').toLowerCase().includes(s) ||
+                 (p.email || '').toLowerCase().includes(s) ||
+                 (p.title || '').toLowerCase().includes(s) ||
+                 (p.company_name || '').toLowerCase().includes(s);
+        }
+        return true;
+      });
+
+      return `
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">People</h1>
+            <p class="page-subtitle">${state.people.length} contacts</p>
+          </div>
+          <button class="btn btn-primary" onclick="openAddPersonModal()">+ Add Person</button>
+        </div>
+
+        <div class="filters">
+          ${rels.map(r => `
+            <button class="filter-chip ${state.filters.peopleRelationship === r ? 'active' : ''}"
+                    onclick="state.filters.peopleRelationship='${r}';render();">
+              ${r === 'all' ? 'All' : relLabel(r)}
+            </button>
+          `).join('')}
+          <div class="search-bar" style="margin-left:auto;">
+            <span class="search-icon">⌕</span>
+            <input type="text" placeholder="Search people..."
+                   value="${esc(state.filters.peopleSearch)}"
+                   oninput="state.filters.peopleSearch=this.value;render();">
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Name</th><th>Title</th><th>Company</th><th>Status</th><th>Source</th><th></th></tr>
+            </thead>
+            <tbody>
+              ${filtered.length ? filtered.map(p => `
+                <tr>
+                  <td style="font-weight:500;">${esc(p.name)}</td>
+                  <td style="color:var(--text-dim);font-size:13px;">${esc(p.title || '—')}</td>
+                  <td style="color:var(--text-dim);font-size:13px;">${esc(p.company_name || '—')}</td>
+                  <td><span class="relationship relationship-${p.relationship}">${relLabel(p.relationship)}</span></td>
+                  <td style="color:var(--text-dim);font-size:13px;">${esc(p.source || '—')}</td>
+                  <td>
+                    <button class="btn btn-ghost btn-sm" onclick="openEditPersonModal(${p.id})">Edit</button>
+                    <button class="btn btn-ghost btn-sm btn-danger" onclick="deletePerson(${p.id})">✕</button>
+                  </td>
+                </tr>
+              `).join('') : `
+                <tr><td colspan="6">
+                  <div class="empty-state">
+                    <div class="icon">●</div>
+                    <h3>No people found</h3>
+                    <p>Try adjusting your filters or add someone.</p>
+                  </div>
+                </td></tr>
+              `}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    // ── Intake Page ───────────────────────────────────
+    function renderIntake() {
+      return `
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Quick Add</h1>
+            <p class="page-subtitle">Paste raw notes, forwarded emails, or any messy text — AI will parse it</p>
+          </div>
+        </div>
+
+        <div class="intake-zone" id="intake-zone">
+          <h3>⚡ Drop your notes here</h3>
+          <p>Paste company names, meeting notes, forwarded emails — anything. We'll figure out the structure.</p>
+          <textarea class="intake-textarea" id="intake-text" placeholder="e.g.
+Companies I met at MIT Hackathon:
+General Intelligence, Andrew Pignanelli - USV, Acrew
+Tomo, Justin Quan - backed by Conviction and BCV
+Nox, Molly Cantillon - backed by OpenAI
+
+Or just paste a forwarded email, a list of names, anything..."></textarea>
+          <div style="margin-top:16px;display:flex;gap:12px;justify-content:center;align-items:center;">
+            <select id="intake-source" style="width:200px;">
+              <option value="manual">Manual entry</option>
+              <option value="email">Forwarded email</option>
+              <option value="meeting_notes">Meeting notes</option>
+              <option value="apple_notes">Apple Notes</option>
+              <option value="referral">Referral</option>
+              <option value="event">Event / Conference</option>
+            </select>
+            <button class="btn btn-primary" onclick="processIntake()" id="intake-btn">
+              ⚡ Parse & Add
+            </button>
+          </div>
+        </div>
+
+        <div id="intake-results" style="display:none;"></div>
+
+        <div style="margin-top:32px;">
+          <h3 style="font-size:14px;font-weight:600;color:var(--text-dim);margin-bottom:12px;">HOW TO USE EMAIL FORWARDING</h3>
+          <div class="detail-panel">
+            <p style="font-size:14px;color:var(--text-dim);line-height:1.7;">
+              Once you deploy this app, set up email forwarding to automatically intake deals:
+            </p>
+            <ol style="margin-top:12px;padding-left:20px;color:var(--text-dim);font-size:14px;line-height:2;">
+              <li>Set up a <strong style="color:var(--text);">SendGrid Inbound Parse</strong> or <strong style="color:var(--text);">Mailgun Route</strong></li>
+              <li>Point it to <code style="background:var(--surface-3);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:12px;">https://your-domain/api/intake/email</code></li>
+              <li>Forward any email to your intake address — companies and people get auto-parsed</li>
+            </ol>
+            <p style="margin-top:12px;font-size:13px;color:var(--text-muted);">
+              You can also use Apple Shortcuts to send text from your phone to the <code style="background:var(--surface-3);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:12px;">/api/intake</code> endpoint.
+            </p>
+          </div>
+        </div>
+      `;
+    }
+
+    // ── Settings Page ─────────────────────────────────
+    function renderSettings() {
+      return `
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Settings</h1>
+            <p class="page-subtitle">Configure integrations and preferences</p>
+          </div>
+        </div>
+
+        <div class="detail-panel">
+          <h3 style="margin-bottom:16px;font-size:16px;">Airtable Sync</h3>
+          <p style="font-size:14px;color:var(--text-dim);margin-bottom:16px;">
+            Push all companies to your Airtable base. Configure your API key and base ID in the <code style="background:var(--surface-3);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:12px;">.env</code> file.
+          </p>
+          <button class="btn" onclick="syncAirtable()">Sync to Airtable</button>
+          <div id="sync-status" style="margin-top:12px;font-size:13px;color:var(--text-dim);"></div>
+        </div>
+
+        <div class="detail-panel" style="margin-top:16px;">
+          <h3 style="margin-bottom:16px;font-size:16px;">Environment Variables</h3>
+          <p style="font-size:14px;color:var(--text-dim);line-height:1.8;">
+            Set these in your <code style="background:var(--surface-3);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:12px;">.env</code> file:
+          </p>
+          <div style="margin-top:12px;background:var(--bg);border-radius:var(--radius-sm);padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:2;color:var(--text-dim);">
+            <span style="color:var(--accent);">ANTHROPIC_API_KEY</span>=sk-ant-...<br>
+            <span style="color:var(--accent);">AIRTABLE_API_KEY</span>=pat...<br>
+            <span style="color:var(--accent);">AIRTABLE_BASE_ID</span>=app...<br>
+            <span style="color:var(--accent);">AIRTABLE_TABLE_NAME</span>=Companies<br>
+            <span style="color:var(--accent);">PORT</span>=3000
+          </div>
+        </div>
+
+        <div class="detail-panel" style="margin-top:16px;">
+          <h3 style="margin-bottom:16px;font-size:16px;">Apple Shortcut Integration</h3>
+          <p style="font-size:14px;color:var(--text-dim);line-height:1.8;">
+            Create an Apple Shortcut that sends selected text to your DealFlow instance:
+          </p>
+          <ol style="margin-top:12px;padding-left:20px;color:var(--text-dim);font-size:14px;line-height:2;">
+            <li>Open <strong style="color:var(--text);">Shortcuts</strong> app on iPhone</li>
+            <li>Create new shortcut → Add <strong style="color:var(--text);">"Get Contents of URL"</strong> action</li>
+            <li>URL: <code style="background:var(--surface-3);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:12px;">https://your-domain/api/intake</code></li>
+            <li>Method: POST, Body: JSON with <code style="background:var(--surface-3);padding:2px 6px;border-radius:4px;">{"text": "Shortcut Input", "source": "iphone"}</code></li>
+            <li>Add to Share Sheet — now you can highlight text anywhere and send it to DealFlow</li>
+          </ol>
+        </div>
+      `;
+    }
+
+    // ── Company Detail ────────────────────────────────
+    function renderCompanyDetail() {
+      const c = state.detailCompany;
+      if (!c) return '<p>Loading...</p>';
+
+      return `
+        <div style="margin-bottom:16px;">
+          <button class="btn btn-ghost" onclick="state.page='companies';render();">
+            ← Back to Companies
+          </button>
+        </div>
+
+        <div class="detail-panel">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div>
+              <h2>${esc(c.name)}</h2>
+              ${c.description ? `<p style="color:var(--text-dim);margin-top:4px;">${esc(c.description)}</p>` : ''}
+            </div>
+            <span class="stage stage-${c.stage}" style="font-size:14px;">${stageLabel(c.stage)}</span>
+          </div>
+
+          <div class="detail-meta">
+            ${c.source ? `<div class="detail-meta-item"><strong>Source:</strong> ${esc(c.source)}</div>` : ''}
+            ${c.investors ? `<div class="detail-meta-item"><strong>Investors:</strong> ${esc(c.investors)}</div>` : ''}
+            ${c.website ? `<div class="detail-meta-item"><strong>Website:</strong> <a href="${esc(c.website)}" target="_blank" style="color:var(--accent);">${esc(c.website)}</a></div>` : ''}
+            <div class="detail-meta-item"><strong>Added:</strong> ${new Date(c.created_at).toLocaleDateString()}</div>
+          </div>
+
+          ${c.notes ? `
+            <div class="detail-section">
+              <h3>Notes</h3>
+              <p style="font-size:14px;color:var(--text-dim);white-space:pre-wrap;">${esc(c.notes)}</p>
+            </div>
+          ` : ''}
+        </div>
+
+        ${c.people && c.people.length ? `
+          <div class="detail-panel">
+            <h3 style="font-size:14px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;">
+              Associated People
+            </h3>
+            <div class="table-wrapper">
+              <table>
+                <thead><tr><th>Name</th><th>Title</th><th>Status</th></tr></thead>
+                <tbody>
+                  ${c.people.map(p => `
+                    <tr>
+                      <td style="font-weight:500;">${esc(p.name)}</td>
+                      <td style="color:var(--text-dim);">${esc(p.title || '—')}</td>
+                      <td><span class="relationship relationship-${p.relationship}">${relLabel(p.relationship)}</span></td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ` : ''}
+
+        <div style="margin-top:16px;display:flex;gap:8px;">
+          <button class="btn" onclick="openEditCompanyModal(${c.id})">Edit Company</button>
+          <button class="btn btn-danger" onclick="deleteCompany(${c.id})">Delete</button>
+        </div>
+      `;
+    }
+
+    // ── Actions ───────────────────────────────────────
+    async function viewCompany(id) {
+      const data = await API.get(`/companies/${id}`);
+      state.detailCompany = data;
+      state.page = 'company-detail';
+      render();
+    }
+
+    function openAddCompanyModal() {
+      openModal('Add Company', `
+        <div class="input-group">
+          <label>Company Name</label>
+          <input type="text" id="f-name" placeholder="e.g. Rayfit">
+        </div>
+        <div class="input-group">
+          <label>Description</label>
+          <input type="text" id="f-description" placeholder="One-liner about what they do">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="input-group">
+            <label>Stage</label>
+            <select id="f-stage">
+              <option value="tracking">Tracking</option>
+              <option value="meeting_scheduled">Meeting Scheduled</option>
+              <option value="considering">Considering</option>
+              <option value="passed">Passed</option>
+              <option value="invested">Invested</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Source</label>
+            <input type="text" id="f-source" placeholder="e.g. MIT Hackathon">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Investors</label>
+          <input type="text" id="f-investors" placeholder="e.g. USV, Acrew, Compound">
+        </div>
+        <div class="input-group">
+          <label>Website</label>
+          <input type="text" id="f-website" placeholder="https://...">
+        </div>
+        <div class="input-group">
+          <label>Notes</label>
+          <textarea id="f-notes" rows="3" placeholder="Anything else..."></textarea>
+        </div>
+      `, `
+        <button class="btn" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveNewCompany()">Add Company</button>
+      `);
+    }
+
+    function openEditCompanyModal(id) {
+      const c = state.companies.find(x => x.id === id) || state.detailCompany;
+      if (!c) return;
+
+      openModal('Edit Company', `
+        <div class="input-group">
+          <label>Company Name</label>
+          <input type="text" id="f-name" value="${esc(c.name || '')}">
+        </div>
+        <div class="input-group">
+          <label>Description</label>
+          <input type="text" id="f-description" value="${esc(c.description || '')}">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="input-group">
+            <label>Stage</label>
+            <select id="f-stage">
+              ${['tracking','meeting_scheduled','considering','passed','invested'].map(s =>
+                `<option value="${s}" ${c.stage === s ? 'selected' : ''}>${stageLabel(s)}</option>`
+              ).join('')}
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Source</label>
+            <input type="text" id="f-source" value="${esc(c.source || '')}">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Investors</label>
+          <input type="text" id="f-investors" value="${esc(c.investors || '')}">
+        </div>
+        <div class="input-group">
+          <label>Website</label>
+          <input type="text" id="f-website" value="${esc(c.website || '')}">
+        </div>
+        <div class="input-group">
+          <label>Notes</label>
+          <textarea id="f-notes" rows="3">${esc(c.notes || '')}</textarea>
+        </div>
+      `, `
+        <button class="btn" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="updateCompany(${c.id})">Save</button>
+      `);
+    }
+
+    async function saveNewCompany() {
+      const data = {
+        name: document.getElementById('f-name').value,
+        description: document.getElementById('f-description').value,
+        stage: document.getElementById('f-stage').value,
+        source: document.getElementById('f-source').value,
+        investors: document.getElementById('f-investors').value,
+        website: document.getElementById('f-website').value,
+        notes: document.getElementById('f-notes').value,
+      };
+      if (!data.name) return;
+      await API.post('/companies', data);
+      closeModal();
+      await loadData();
+      render();
+      showToast(`${data.name} added`);
+    }
+
+    async function updateCompany(id) {
+      const data = {
+        name: document.getElementById('f-name').value,
+        description: document.getElementById('f-description').value,
+        stage: document.getElementById('f-stage').value,
+        source: document.getElementById('f-source').value,
+        investors: document.getElementById('f-investors').value,
+        website: document.getElementById('f-website').value,
+        notes: document.getElementById('f-notes').value,
+      };
+      await API.put(`/companies/${id}`, data);
+      closeModal();
+      await loadData();
+      if (state.page === 'company-detail') {
+        state.detailCompany = await API.get(`/companies/${id}`);
+      }
+      render();
+      showToast(`${data.name} updated`);
+    }
+
+    async function deleteCompany(id) {
+      if (!confirm('Delete this company?')) return;
+      await API.del(`/companies/${id}`);
+      await loadData();
+      if (state.page === 'company-detail') state.page = 'companies';
+      render();
+      showToast('Company deleted', '✕');
+    }
+
+    function openAddPersonModal() {
+      const companyOptions = state.companies.map(c =>
+        `<option value="${c.id}">${esc(c.name)}</option>`
+      ).join('');
+
+      openModal('Add Person', `
+        <div class="input-group">
+          <label>Name</label>
+          <input type="text" id="f-pname">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="input-group">
+            <label>Title</label>
+            <input type="text" id="f-ptitle" placeholder="e.g. CEO, Partner">
+          </div>
+          <div class="input-group">
+            <label>Company</label>
+            <select id="f-pcompany">
+              <option value="">None</option>
+              ${companyOptions}
+            </select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="input-group">
+            <label>Email</label>
+            <input type="email" id="f-pemail">
+          </div>
+          <div class="input-group">
+            <label>Relationship</label>
+            <select id="f-prelationship">
+              <option value="new">New</option>
+              <option value="met">Met</option>
+              <option value="in_touch">In Touch</option>
+              <option value="close">Close</option>
+            </select>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>LinkedIn</label>
+          <input type="text" id="f-plinkedin" placeholder="https://linkedin.com/in/...">
+        </div>
+        <div class="input-group">
+          <label>Source</label>
+          <input type="text" id="f-psource" placeholder="e.g. Conference, referral from X">
+        </div>
+        <div class="input-group">
+          <label>Notes</label>
+          <textarea id="f-pnotes" rows="3"></textarea>
+        </div>
+      `, `
+        <button class="btn" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveNewPerson()">Add Person</button>
+      `);
+    }
+
+    function openEditPersonModal(id) {
+      const p = state.people.find(x => x.id === id);
+      if (!p) return;
+      const companyOptions = state.companies.map(c =>
+        `<option value="${c.id}" ${p.company_id === c.id ? 'selected' : ''}>${esc(c.name)}</option>`
+      ).join('');
+
+      openModal('Edit Person', `
+        <div class="input-group">
+          <label>Name</label>
+          <input type="text" id="f-pname" value="${esc(p.name || '')}">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="input-group">
+            <label>Title</label>
+            <input type="text" id="f-ptitle" value="${esc(p.title || '')}">
+          </div>
+          <div class="input-group">
+            <label>Company</label>
+            <select id="f-pcompany">
+              <option value="">None</option>
+              ${companyOptions}
+            </select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="input-group">
+            <label>Email</label>
+            <input type="email" id="f-pemail" value="${esc(p.email || '')}">
+          </div>
+          <div class="input-group">
+            <label>Relationship</label>
+            <select id="f-prelationship">
+              ${['new','met','in_touch','close'].map(r =>
+                `<option value="${r}" ${p.relationship === r ? 'selected' : ''}>${relLabel(r)}</option>`
+              ).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>LinkedIn</label>
+          <input type="text" id="f-plinkedin" value="${esc(p.linkedin || '')}">
+        </div>
+        <div class="input-group">
+          <label>Source</label>
+          <input type="text" id="f-psource" value="${esc(p.source || '')}">
+        </div>
+        <div class="input-group">
+          <label>Notes</label>
+          <textarea id="f-pnotes" rows="3">${esc(p.notes || '')}</textarea>
+        </div>
+      `, `
+        <button class="btn" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="updatePerson(${p.id})">Save</button>
+      `);
+    }
+
+    async function saveNewPerson() {
+      const data = {
+        name: document.getElementById('f-pname').value,
+        title: document.getElementById('f-ptitle').value,
+        company_id: document.getElementById('f-pcompany').value || null,
+        email: document.getElementById('f-pemail').value,
+        relationship: document.getElementById('f-prelationship').value,
+        linkedin: document.getElementById('f-plinkedin').value,
+        source: document.getElementById('f-psource').value,
+        notes: document.getElementById('f-pnotes').value,
+      };
+      if (!data.name) return;
+      await API.post('/people', data);
+      closeModal();
+      await loadData();
+      render();
+      showToast(`${data.name} added`);
+    }
+
+    async function updatePerson(id) {
+      const data = {
+        name: document.getElementById('f-pname').value,
+        title: document.getElementById('f-ptitle').value,
+        company_id: document.getElementById('f-pcompany').value || null,
+        email: document.getElementById('f-pemail').value,
+        relationship: document.getElementById('f-prelationship').value,
+        linkedin: document.getElementById('f-plinkedin').value,
+        source: document.getElementById('f-psource').value,
+        notes: document.getElementById('f-pnotes').value,
+      };
+      await API.put(`/people/${id}`, data);
+      closeModal();
+      await loadData();
+      render();
+      showToast(`${data.name} updated`);
+    }
+
+    async function deletePerson(id) {
+      if (!confirm('Delete this person?')) return;
+      await API.del(`/people/${id}`);
+      await loadData();
+      render();
+      showToast('Person deleted', '✕');
+    }
+
+    // ── Intake Processing ─────────────────────────────
+    async function processIntake() {
+      const text = document.getElementById('intake-text').value;
+      const source = document.getElementById('intake-source').value;
+      if (!text.trim()) return;
+
+      const btn = document.getElementById('intake-btn');
+      btn.innerHTML = '<span class="spinner"></span> Parsing...';
+      btn.disabled = true;
+
+      try {
+        const result = await API.post('/intake', { text, source });
+        const resultsDiv = document.getElementById('intake-results');
+        resultsDiv.style.display = 'block';
+
+        let html = '<div class="intake-results">';
+        html += '<h4>✓ Parsed Results</h4>';
+
+        if (result.created.companies.length) {
+          html += '<div style="margin-bottom:12px;font-size:13px;color:var(--text-dim);font-weight:600;">COMPANIES</div>';
+          for (const co of result.created.companies) {
+            const icon = co.status === 'duplicate' ? '⚠' : '✓';
+            const cls = co.status === 'duplicate' ? 'dupe' : 'check';
+            const label = co.status === 'duplicate' ? 'already exists' : 'added';
+            html += `<div class="intake-item"><span class="${cls}">${icon}</span> <strong>${esc(co.name)}</strong> — ${label}</div>`;
+          }
+        }
+
+        if (result.created.people.length) {
+          html += '<div style="margin-top:16px;margin-bottom:12px;font-size:13px;color:var(--text-dim);font-weight:600;">PEOPLE</div>';
+          for (const p of result.created.people) {
+            const icon = p.status === 'duplicate' ? '⚠' : '✓';
+            const cls = p.status === 'duplicate' ? 'dupe' : 'check';
+            const label = p.status === 'duplicate' ? 'already exists' : 'added';
+            html += `<div class="intake-item"><span class="${cls}">${icon}</span> <strong>${esc(p.name)}</strong> — ${label}</div>`;
+          }
+        }
+
+        if (!result.created.companies.length && !result.created.people.length) {
+          html += '<p style="color:var(--text-dim);">No new companies or people found in the text.</p>';
+        }
+
+        html += '</div>';
+        resultsDiv.innerHTML = html;
+
+        await loadData();
+        showToast(`Added ${result.created.companies.filter(c => c.status === 'created').length} companies, ${result.created.people.filter(p => p.status === 'created').length} people`);
+
+      } catch (err) {
+        showToast('Error parsing: ' + err.message, '✕');
+      }
+
+      btn.innerHTML = '⚡ Parse & Add';
+      btn.disabled = false;
+    }
+
+    async function syncAirtable() {
+      const statusDiv = document.getElementById('sync-status');
+      statusDiv.innerHTML = '<span class="spinner"></span> Syncing...';
+      try {
+        const result = await API.post('/sync/airtable', {});
+        if (result.error) {
+          statusDiv.innerHTML = `<span style="color:var(--red);">✕ ${esc(result.error)}</span>`;
+        } else {
+          const synced = result.synced.filter(s => s.status === 'synced').length;
+          statusDiv.innerHTML = `<span style="color:var(--accent);">✓ Synced ${synced} companies to Airtable</span>`;
+        }
+      } catch (err) {
+        statusDiv.innerHTML = `<span style="color:var(--red);">✕ ${err.message}</span>`;
+      }
+    }
+
+    // ── Helpers ────────────────────────────────────────
+    function esc(str) {
+      if (!str) return '';
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function attachEventListeners() {
+      // Auto-focus search inputs
+    }
+
+    // ── Init ──────────────────────────────────────────
+    (async () => {
+      await loadData();
+      render();
+    })();
+  </script>
+</body>
+</html>
