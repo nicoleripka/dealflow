@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>NR Deal Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'DM Sans', sans-serif; background: #f8f9fb; color: #0f172a; }
+    ::selection { background: #c7d2fe; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* Auth gate */
+    .auth-gate {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8f9fb;
+    }
+    .auth-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px;
+      width: 360px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+      border: 1px solid #eef0f4;
+      text-align: center;
+    }
+    .auth-box h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+    .auth-box p {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 24px;
+    }
+    .auth-box input {
+      width: 100%;
+      padding: 11px 16px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: border 0.15s;
+      text-align: center;
+      letter-spacing: 0.1em;
+    }
+    .auth-box input:focus { border-color: #6366f1; }
+    .auth-box .error { color: #ef4444; font-size: 12px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel" data-type="module">
+    const { useState, useEffect, useMemo, useCallback } = React;
+
+    /* ─── Constants ─── */
+
+    const DEAL_STAGES = [
+      { id: "top_of_funnel", label: "Top of Funnel", color: "#6366f1", bg: "#eef2ff" },
+      { id: "tracking", label: "Tracking", color: "#0ea5e9", bg: "#f0f9ff" },
+      { id: "diligence", label: "Diligence", color: "#f59e0b", bg: "#fffbeb" },
+      { id: "deal_process", label: "Deal Process", color: "#ef4444", bg: "#fef2f2" },
+      { id: "closed", label: "Closed", color: "#10b981", bg: "#ecfdf5" },
+      { id: "passed", label: "Passed", color: "#94a3b8", bg: "#f8fafc" },
+      { id: "to_pass", label: "To Pass", color: "#cbd5e1", bg: "#f8fafc" },
+    ];
+
+    const PEOPLE_TAGS = [
+      { id: "founder", label: "Founder", color: "#6366f1", bg: "#eef2ff" },
+      { id: "operator", label: "Operator", color: "#0ea5e9", bg: "#f0f9ff" },
+      { id: "investor", label: "Investor", color: "#10b981", bg: "#ecfdf5" },
+      { id: "advisor", label: "Advisor", color: "#f59e0b", bg: "#fffbeb" },
+      { id: "lp", label: "LP", color: "#ec4899", bg: "#fdf2f8" },
+      { id: "other", label: "Other", color: "#94a3b8", bg: "#f8fafc" },
+    ];
+
+    const WARMTH = [
+      { id: "hot", label: "Hot", color: "#ef4444", bg: "#fef2f2", icon: "\u{1f525}" },
+      { id: "warm", label: "Warm", color: "#f59e0b", bg: "#fffbeb", icon: "\u2600\ufe0f" },
+      { id: "cool", label: "Cool", color: "#0ea5e9", bg: "#f0f9ff", icon: "\u2744\ufe0f" },
+      { id: "new", label: "New", color: "#94a3b8", bg: "#f8fafc", icon: "\u2726" },
+    ];
+
+    const SOURCES = ["Email", "Text", "Intro \u2014 LP", "Intro \u2014 Fund", "Intro \u2014 Other", "Conference", "Twitter", "Twitter DM", "LinkedIn", "Cold Email", "Other"];
+
+    const DEAL_STAGE_MAP = Object.fromEntries(DEAL_STAGES.map((s) => [s.id, s]));
+    const TAG_MAP = Object.fromEntries(PEOPLE_TAGS.map((t) => [t.id, t]));
+    const WARMTH_MAP = Object.fromEntries(WARMTH.map((w) => [w.id, w]));
+
+    /* ─── Shared Components ─── */
+
+    const SelectPill = ({ value, options, mapObj, onChange }) => (
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        style={{
+          padding: "3px 8px", borderRadius: "6px", border: "1px solid #e2e8f0",
+          fontSize: "11px", fontWeight: 600, color: mapObj[value]?.color || "#64748b",
+          background: mapObj[value]?.bg || "#fff", cursor: "pointer", outline: "none",
+          fontFamily: "'DM Sans', sans-serif",
+        }}
+      >
+        {options.map((o) => (
+          <option key={o.id} value={o.id}>{o.icon ? `${o.icon} ` : ""}{o.label}</option>
+        ))}
+      </select>
+    );
+
+    const inputStyle = {
+      width: "100%", padding: "9px 12px", borderRadius: "8px", border: "1px solid #e2e8f0",
+      fontSize: "13px", fontFamily: "'DM Sans', sans-serif", outline: "none",
+      boxSizing: "border-box", transition: "border 0.15s",
+    };
+
+    const focusHandlers = {
+      onFocus: (e) => (e.target.style.border = "1px solid #6366f1"),
+      onBlur: (e) => (e.target.style.border = "1px solid #e2e8f0"),
+    };
+
+    const btnPrimary = {
+      padding: "9px 18px", borderRadius: "8px", border: "none", background: "#6366f1",
+      fontSize: "13px", fontWeight: 600, color: "#fff", cursor: "pointer",
+      fontFamily: "'DM Sans', sans-serif",
+    };
+
+    const btnSecondary = {
+      padding: "9px 20px", borderRadius: "8px", border: "1px solid #e2e8f0",
+      background: "#fff", fontSize: "13px", fontWeight: 600, color: "#64748b",
+      cursor: "pointer", fontFamily: "'DM Sans', sans-serif",
+    };
+
+    /* ─── Board Card ─── */
+
+    const BoardCard = ({ deal }) => (
+      <div
+        style={{
+          background: "#fff", borderRadius: "10px", padding: "14px 16px",
+          marginBottom: "8px", boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+          border: "1px solid #f1f5f9", cursor: "default", transition: "box-shadow 0.15s",
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)")}
+        onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.06)")}
+      >
+        <div style={{ fontWeight: 700, fontSize: "13.5px", color: "#0f172a", marginBottom: "4px" }}>
+          {deal.name}
+        </div>
+        <div style={{ fontSize: "11.5px", color: "#64748b", marginBottom: "6px" }}>{deal.sector}</div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span style={{ fontSize: "11px", color: "#94a3b8" }}>{deal.raised}</span>
+          <span style={{ fontSize: "10px", color: "#cbd5e1" }}>{deal.source}</span>
+        </div>
+      </div>
+    );
+
+    /* ─── Add Deal Modal ─── */
+
+    const AddDealModal = ({ onClose, onAdd }) => {
+      const [form, setForm] = useState({
+        name: "", stage: "top_of_funnel", sector: "", contact: "",
+        source: "Email", raised: "", notes: "",
+      });
+      const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+      return (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.4)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }} onClick={onClose}>
+          <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: "16px", padding: "32px", width: "440px", maxHeight: "90vh", overflowY: "auto", boxShadow: "0 24px 48px rgba(0,0,0,0.12)" }}>
+            <h3 style={{ margin: "0 0 20px", fontSize: "18px", fontWeight: 700, color: "#0f172a" }}>Add Deal</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <input placeholder="Company name *" value={form.name} onChange={(e) => update("name", e.target.value)} style={inputStyle} {...focusHandlers} />
+              <select value={form.stage} onChange={(e) => update("stage", e.target.value)} style={{ ...inputStyle, cursor: "pointer" }}>
+                {DEAL_STAGES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+              </select>
+              <input placeholder="Sector" value={form.sector} onChange={(e) => update("sector", e.target.value)} style={inputStyle} {...focusHandlers} />
+              <input placeholder="Contact" value={form.contact} onChange={(e) => update("contact", e.target.value)} style={inputStyle} {...focusHandlers} />
+              <select value={form.source} onChange={(e) => update("source", e.target.value)} style={{ ...inputStyle, cursor: "pointer" }}>
+                {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <input placeholder="Amount raised" value={form.raised} onChange={(e) => update("raised", e.target.value)} style={inputStyle} {...focusHandlers} />
+              <textarea placeholder="Notes" value={form.notes} onChange={(e) => update("notes", e.target.value)} rows={3} style={{ ...inputStyle, resize: "vertical" }} {...focusHandlers} />
+            </div>
+            <div style={{ display: "flex", gap: "10px", marginTop: "20px", justifyContent: "flex-end" }}>
+              <button onClick={onClose} style={btnSecondary}>Cancel</button>
+              <button onClick={() => { if (!form.name.trim()) return; onAdd({ ...form, id: Date.now(), date: new Date().toISOString().slice(0, 10) }); onClose(); }} style={btnPrimary}>Add Deal</button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    /* ─── Add Person Modal ─── */
+
+    const AddPersonModal = ({ onClose, onAdd }) => {
+      const [form, setForm] = useState({
+        name: "", tag: "founder", warmth: "new", company: "",
+        role: "", email: "", source: "Email", notes: "",
+      });
+      const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+      return (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.4)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }} onClick={onClose}>
+          <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: "16px", padding: "32px", width: "440px", maxHeight: "90vh", overflowY: "auto", boxShadow: "0 24px 48px rgba(0,0,0,0.12)" }}>
+            <h3 style={{ margin: "0 0 20px", fontSize: "18px", fontWeight: 700, color: "#0f172a" }}>Add Person</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <input placeholder="Full name *" value={form.name} onChange={(e) => update("name", e.target.value)} style={inputStyle} {...focusHandlers} />
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                <select value={form.tag} onChange={(e) => update("tag", e.target.value)} style={{ ...inputStyle, cursor: "pointer" }}>
+                  {PEOPLE_TAGS.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
+                </select>
+                <select value={form.warmth} onChange={(e) => update("warmth", e.target.value)} style={{ ...inputStyle, cursor: "pointer" }}>
+                  {WARMTH.map((w) => <option key={w.id} value={w.id}>{w.icon} {w.label}</option>)}
+                </select>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                <input placeholder="Company" value={form.company} onChange={(e) => update("company", e.target.value)} style={inputStyle} {...focusHandlers} />
+                <input placeholder="Role / Title" value={form.role} onChange={(e) => update("role", e.target.value)} style={inputStyle} {...focusHandlers} />
+              </div>
+              <input placeholder="Email" value={form.email} onChange={(e) => update("email", e.target.value)} style={inputStyle} {...focusHandlers} />
+              <select value={form.source} onChange={(e) => update("source", e.target.value)} style={{ ...inputStyle, cursor: "pointer" }}>
+                {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <textarea placeholder="Notes" value={form.notes} onChange={(e) => update("notes", e.target.value)} rows={3} style={{ ...inputStyle, resize: "vertical" }} {...focusHandlers} />
+            </div>
+            <div style={{ display: "flex", gap: "10px", marginTop: "20px", justifyContent: "flex-end" }}>
+              <button onClick={onClose} style={btnSecondary}>Cancel</button>
+              <button onClick={() => { if (!form.name.trim()) return; onAdd({ ...form, id: Date.now(), date: new Date().toISOString().slice(0, 10) }); onClose(); }} style={btnPrimary}>Add Person</button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    /* ─── Deals Page ─── */
+
+    const DealsPage = ({ deals, setDeals }) => {
+      const [view, setView] = useState("table");
+      const [filter, setFilter] = useState("all");
+      const [search, setSearch] = useState("");
+      const [sortBy, setSortBy] = useState("date");
+      const [sortDir, setSortDir] = useState("desc");
+      const [showAdd, setShowAdd] = useState(false);
+
+      const filtered = useMemo(() => {
+        let d = [...deals];
+        if (filter !== "all") d = d.filter((deal) => deal.stage === filter);
+        if (search) {
+          const q = search.toLowerCase();
+          d = d.filter((deal) =>
+            (deal.name || "").toLowerCase().includes(q) ||
+            (deal.sector || "").toLowerCase().includes(q) ||
+            (deal.contact || "").toLowerCase().includes(q) ||
+            (deal.notes || "").toLowerCase().includes(q)
+          );
+        }
+        d.sort((a, b) => {
+          let cmp = 0;
+          if (sortBy === "date") cmp = (a.date || "").localeCompare(b.date || "");
+          else if (sortBy === "name") cmp = (a.name || "").localeCompare(b.name || "");
+          else if (sortBy === "stage") cmp = DEAL_STAGES.findIndex((s) => s.id === a.stage) - DEAL_STAGES.findIndex((s) => s.id === b.stage);
+          return sortDir === "desc" ? -cmp : cmp;
+        });
+        return d;
+      }, [deals, filter, search, sortBy, sortDir]);
+
+      const counts = useMemo(() => {
+        const c = { all: deals.length };
+        DEAL_STAGES.forEach((s) => (c[s.id] = deals.filter((d) => d.stage === s.id).length));
+        return c;
+      }, [deals]);
+
+      const toggleSort = (col) => {
+        if (sortBy === col) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+        else { setSortBy(col); setSortDir("desc"); }
+      };
+
+      const SortIcon = ({ col }) => (
+        <span style={{ marginLeft: "4px", opacity: sortBy === col ? 1 : 0.3, fontSize: "10px" }}>
+          {sortBy === col && sortDir === "asc" ? "\u25b2" : "\u25bc"}
+        </span>
+      );
+
+      const activeCount = deals.filter((d) => !["passed", "to_pass"].includes(d.stage)).length;
+
+      return (
+        <>
+          <div style={{ padding: "20px 32px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <p style={{ margin: 0, fontSize: "13px", color: "#94a3b8" }}>
+              {deals.length} deal{deals.length !== 1 ? "s" : ""} \u00b7 {activeCount} active
+            </p>
+            <button onClick={() => setShowAdd(true)} style={btnPrimary}>+ Add Deal</button>
+          </div>
+
+          <div style={{ padding: "16px 32px 0", display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", background: "#fff", borderRadius: "10px", border: "1px solid #eef0f4", overflow: "hidden" }}>
+              {[{ id: "all", label: "All" }, ...DEAL_STAGES].map((s) => (
+                <button key={s.id} onClick={() => setFilter(s.id)} style={{
+                  padding: "8px 14px", border: "none",
+                  background: filter === s.id ? "#6366f1" : "transparent",
+                  color: filter === s.id ? "#fff" : "#64748b",
+                  fontSize: "12px", fontWeight: 600, cursor: "pointer",
+                  fontFamily: "'DM Sans', sans-serif", borderRight: "1px solid #f1f5f9",
+                  transition: "all 0.15s", whiteSpace: "nowrap",
+                }}>
+                  {s.label}<span style={{ marginLeft: "5px", fontSize: "10px", opacity: 0.7 }}>{counts[s.id] || 0}</span>
+                </button>
+              ))}
+            </div>
+            <div style={{ flex: 1 }} />
+            <input type="text" placeholder="Search deals..." value={search} onChange={(e) => setSearch(e.target.value)}
+              style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid #e2e8f0", fontSize: "13px", fontFamily: "'DM Sans', sans-serif", width: "200px", outline: "none" }}
+              {...focusHandlers} />
+            <div style={{ display: "flex", background: "#fff", borderRadius: "8px", border: "1px solid #eef0f4", overflow: "hidden" }}>
+              {[{ id: "table", icon: "\u2630" }, { id: "board", icon: "\u25a6" }].map((v) => (
+                <button key={v.id} onClick={() => setView(v.id)} style={{
+                  padding: "7px 12px", border: "none",
+                  background: view === v.id ? "#6366f1" : "transparent",
+                  color: view === v.id ? "#fff" : "#94a3b8",
+                  fontSize: "14px", cursor: "pointer", transition: "all 0.15s",
+                }}>{v.icon}</button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ padding: "16px 32px 32px" }}>
+            {view === "table" ? (
+              <div style={{ background: "#fff", borderRadius: "12px", border: "1px solid #eef0f4", overflow: "hidden" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+                  <thead>
+                    <tr style={{ borderBottom: "1px solid #f1f5f9" }}>
+                      {[{ key: "name", label: "Company" }, { key: "stage", label: "Stage" }, { key: null, label: "Sector" }, { key: null, label: "Contact" }, { key: null, label: "Source" }, { key: null, label: "Raising" }, { key: "date", label: "Date" }].map((col, i) => (
+                        <th key={i} onClick={() => col.key && toggleSort(col.key)} style={{
+                          padding: "12px 16px", textAlign: "left", fontWeight: 600, fontSize: "11px",
+                          color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em",
+                          cursor: col.key ? "pointer" : "default", userSelect: "none", whiteSpace: "nowrap",
+                        }}>
+                          {col.label}{col.key && <SortIcon col={col.key} />}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.map((deal) => (
+                      <tr key={deal.id} style={{ borderBottom: "1px solid #f8fafc", transition: "background 0.1s" }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = "#fafbfd")}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+                        <td style={{ padding: "12px 16px" }}>
+                          <div style={{ fontWeight: 700, color: "#0f172a" }}>{deal.name}</div>
+                          <div style={{ fontSize: "11px", color: "#94a3b8", marginTop: "2px", maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{deal.notes}</div>
+                        </td>
+                        <td style={{ padding: "12px 16px" }}>
+                          <SelectPill value={deal.stage} options={DEAL_STAGES} mapObj={DEAL_STAGE_MAP}
+                            onChange={(v) => setDeals((prev) => prev.map((d) => d.id === deal.id ? { ...d, stage: v } : d))} />
+                        </td>
+                        <td style={{ padding: "12px 16px", color: "#334155" }}>{deal.sector}</td>
+                        <td style={{ padding: "12px 16px", color: "#334155" }}>{deal.contact}</td>
+                        <td style={{ padding: "12px 16px", color: "#94a3b8", fontSize: "12px" }}>{deal.source}</td>
+                        <td style={{ padding: "12px 16px", fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "#334155" }}>{deal.raised}</td>
+                        <td style={{ padding: "12px 16px", color: "#94a3b8", fontSize: "12px", whiteSpace: "nowrap" }}>{deal.date}</td>
+                      </tr>
+                    ))}
+                    {filtered.length === 0 && (
+                      <tr><td colSpan={7} style={{ padding: "60px 40px", textAlign: "center", color: "#94a3b8" }}>
+                        {deals.length === 0
+                          ? "No deals yet. Add one above or tell Claude about a deal."
+                          : "No deals match your filters."}
+                      </td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: `repeat(${DEAL_STAGES.length}, minmax(180px, 1fr))`, gap: "12px", overflowX: "auto", paddingBottom: "16px" }}>
+                {DEAL_STAGES.map((stage) => {
+                  const stageDeals = deals.filter((d) => d.stage === stage.id);
+                  return (
+                    <div key={stage.id}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px", padding: "0 4px" }}>
+                        <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: stage.color }} />
+                        <span style={{ fontWeight: 700, fontSize: "12px", color: "#334155" }}>{stage.label}</span>
+                        <span style={{ fontSize: "11px", color: "#94a3b8", background: "#f1f5f9", borderRadius: "999px", padding: "1px 8px", fontWeight: 600 }}>{stageDeals.length}</span>
+                      </div>
+                      <div style={{ background: "#f1f5f9", borderRadius: "12px", padding: "8px", minHeight: "120px" }}>
+                        {stageDeals.map((deal) => <BoardCard key={deal.id} deal={deal} />)}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          {showAdd && <AddDealModal onClose={() => setShowAdd(false)} onAdd={(deal) => setDeals((prev) => [deal, ...prev])} />}
+        </>
+      );
+    };
+
+    /* ─── People Page ─── */
+
+    const PeoplePage = ({ people, setPeople }) => {
+      const [filter, setFilter] = useState("all");
+      const [warmthFilter, setWarmthFilter] = useState("all");
+      const [search, setSearch] = useState("");
+      const [sortBy, setSortBy] = useState("date");
+      const [sortDir, setSortDir] = useState("desc");
+      const [showAdd, setShowAdd] = useState(false);
+
+      const filtered = useMemo(() => {
+        let p = [...people];
+        if (filter !== "all") p = p.filter((person) => person.tag === filter);
+        if (warmthFilter !== "all") p = p.filter((person) => person.warmth === warmthFilter);
+        if (search) {
+          const q = search.toLowerCase();
+          p = p.filter((person) =>
+            (person.name || "").toLowerCase().includes(q) ||
+            (person.company || "").toLowerCase().includes(q) ||
+            (person.role || "").toLowerCase().includes(q) ||
+            (person.notes || "").toLowerCase().includes(q)
+          );
+        }
+        p.sort((a, b) => {
+          let cmp = 0;
+          if (sortBy === "date") cmp = (a.date || "").localeCompare(b.date || "");
+          else if (sortBy === "name") cmp = (a.name || "").localeCompare(b.name || "");
+          return sortDir === "desc" ? -cmp : cmp;
+        });
+        return p;
+      }, [people, filter, warmthFilter, search, sortBy, sortDir]);
+
+      const counts = useMemo(() => {
+        const c = { all: people.length };
+        PEOPLE_TAGS.forEach((t) => (c[t.id] = people.filter((p) => p.tag === t.id).length));
+        return c;
+      }, [people]);
+
+      const toggleSort = (col) => {
+        if (sortBy === col) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+        else { setSortBy(col); setSortDir("desc"); }
+      };
+
+      const SortIcon = ({ col }) => (
+        <span style={{ marginLeft: "4px", opacity: sortBy === col ? 1 : 0.3, fontSize: "10px" }}>
+          {sortBy === col && sortDir === "asc" ? "\u25b2" : "\u25bc"}
+        </span>
+      );
+
+      const initials = (name) => (name || "").split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+
+      return (
+        <>
+          <div style={{ padding: "20px 32px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <p style={{ margin: 0, fontSize: "13px", color: "#94a3b8" }}>{people.length} people tracked</p>
+            <button onClick={() => setShowAdd(true)} style={btnPrimary}>+ Add Person</button>
+          </div>
+
+          <div style={{ padding: "16px 32px 0", display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", background: "#fff", borderRadius: "10px", border: "1px solid #eef0f4", overflow: "hidden" }}>
+              {[{ id: "all", label: "All" }, ...PEOPLE_TAGS].map((t) => (
+                <button key={t.id} onClick={() => setFilter(t.id)} style={{
+                  padding: "8px 14px", border: "none",
+                  background: filter === t.id ? "#6366f1" : "transparent",
+                  color: filter === t.id ? "#fff" : "#64748b",
+                  fontSize: "12px", fontWeight: 600, cursor: "pointer",
+                  fontFamily: "'DM Sans', sans-serif", borderRight: "1px solid #f1f5f9",
+                  transition: "all 0.15s", whiteSpace: "nowrap",
+                }}>
+                  {t.label}<span style={{ marginLeft: "5px", fontSize: "10px", opacity: 0.7 }}>{counts[t.id] || 0}</span>
+                </button>
+              ))}
+            </div>
+            <div style={{ display: "flex", background: "#fff", borderRadius: "10px", border: "1px solid #eef0f4", overflow: "hidden" }}>
+              {[{ id: "all", label: "All", icon: "" }, ...WARMTH].map((w) => (
+                <button key={w.id} onClick={() => setWarmthFilter(w.id)} style={{
+                  padding: "8px 12px", border: "none",
+                  background: warmthFilter === w.id ? "#6366f1" : "transparent",
+                  color: warmthFilter === w.id ? "#fff" : "#64748b",
+                  fontSize: "12px", fontWeight: 600, cursor: "pointer",
+                  fontFamily: "'DM Sans', sans-serif", borderRight: "1px solid #f1f5f9",
+                  transition: "all 0.15s", whiteSpace: "nowrap",
+                }}>
+                  {w.icon ? `${w.icon} ` : ""}{w.label}
+                </button>
+              ))}
+            </div>
+            <div style={{ flex: 1 }} />
+            <input type="text" placeholder="Search people..." value={search} onChange={(e) => setSearch(e.target.value)}
+              style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid #e2e8f0", fontSize: "13px", fontFamily: "'DM Sans', sans-serif", width: "200px", outline: "none" }}
+              {...focusHandlers} />
+          </div>
+
+          <div style={{ padding: "16px 32px 32px" }}>
+            <div style={{ background: "#fff", borderRadius: "12px", border: "1px solid #eef0f4", overflow: "hidden" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+                <thead>
+                  <tr style={{ borderBottom: "1px solid #f1f5f9" }}>
+                    {[{ key: "name", label: "Person" }, { key: null, label: "Type" }, { key: null, label: "Warmth" }, { key: null, label: "Company" }, { key: null, label: "Email" }, { key: null, label: "Source" }, { key: "date", label: "Added" }].map((col, i) => (
+                      <th key={i} onClick={() => col.key && toggleSort(col.key)} style={{
+                        padding: "12px 16px", textAlign: "left", fontWeight: 600, fontSize: "11px",
+                        color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em",
+                        cursor: col.key ? "pointer" : "default", userSelect: "none", whiteSpace: "nowrap",
+                      }}>
+                        {col.label}{col.key && <SortIcon col={col.key} />}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((person) => (
+                    <tr key={person.id} style={{ borderBottom: "1px solid #f8fafc", transition: "background 0.1s" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "#fafbfd")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+                      <td style={{ padding: "12px 16px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                          <div style={{
+                            width: "32px", height: "32px", borderRadius: "50%",
+                            background: TAG_MAP[person.tag]?.bg || "#f1f5f9",
+                            color: TAG_MAP[person.tag]?.color || "#64748b",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            fontSize: "11px", fontWeight: 700, flexShrink: 0,
+                          }}>
+                            {initials(person.name)}
+                          </div>
+                          <div>
+                            <div style={{ fontWeight: 700, color: "#0f172a" }}>{person.name}</div>
+                            <div style={{ fontSize: "11px", color: "#94a3b8", marginTop: "1px", maxWidth: "180px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {person.role}{person.role && person.notes ? " \u00b7 " : ""}{person.notes}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td style={{ padding: "12px 16px" }}>
+                        <SelectPill value={person.tag} options={PEOPLE_TAGS} mapObj={TAG_MAP}
+                          onChange={(v) => setPeople((prev) => prev.map((p) => p.id === person.id ? { ...p, tag: v } : p))} />
+                      </td>
+                      <td style={{ padding: "12px 16px" }}>
+                        <SelectPill value={person.warmth} options={WARMTH} mapObj={WARMTH_MAP}
+                          onChange={(v) => setPeople((prev) => prev.map((p) => p.id === person.id ? { ...p, warmth: v } : p))} />
+                      </td>
+                      <td style={{ padding: "12px 16px", color: "#334155" }}>{person.company}</td>
+                      <td style={{ padding: "12px 16px", color: "#94a3b8", fontSize: "12px" }}>{person.email}</td>
+                      <td style={{ padding: "12px 16px", color: "#94a3b8", fontSize: "12px" }}>{person.source}</td>
+                      <td style={{ padding: "12px 16px", color: "#94a3b8", fontSize: "12px", whiteSpace: "nowrap" }}>{person.date}</td>
+                    </tr>
+                  ))}
+                  {filtered.length === 0 && (
+                    <tr><td colSpan={7} style={{ padding: "60px 40px", textAlign: "center", color: "#94a3b8" }}>
+                      {people.length === 0
+                        ? "No people yet. Add one above or tell Claude about a contact."
+                        : "No people match your filters."}
+                    </td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {showAdd && <AddPersonModal onClose={() => setShowAdd(false)} onAdd={(person) => setPeople((prev) => [person, ...prev])} />}
+        </>
+      );
+    };
+
+    /* ─── Auth Gate ─── */
+
+    const AUTH_KEY = "nr-deal-tracker-auth";
+    const PASS_HASH = "nr2026";
+
+    const AuthGate = ({ onAuth }) => {
+      const [pin, setPin] = useState("");
+      const [error, setError] = useState(false);
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (pin === PASS_HASH) {
+          sessionStorage.setItem(AUTH_KEY, "1");
+          onAuth();
+        } else {
+          setError(true);
+          setPin("");
+        }
+      };
+
+      return (
+        <div className="auth-gate">
+          <form onSubmit={handleSubmit} className="auth-box">
+            <h2>NR</h2>
+            <p>Enter passcode to continue</p>
+            <input
+              type="password"
+              value={pin}
+              onChange={(e) => { setPin(e.target.value); setError(false); }}
+              placeholder="\u2022\u2022\u2022\u2022\u2022\u2022"
+              autoFocus
+            />
+            {error && <div className="error">Wrong passcode</div>}
+          </form>
+        </div>
+      );
+    };
+
+    /* ─── Main App ─── */
+
+    function App() {
+      const [authed, setAuthed] = useState(() => sessionStorage.getItem(AUTH_KEY) === "1");
+      const [page, setPage] = useState("deals");
+      const [deals, setDeals] = useState([]);
+      const [people, setPeople] = useState([]);
+      const [loaded, setLoaded] = useState(false);
+
+      useEffect(() => {
+        if (!authed) return;
+        fetch("./deals-data.json")
+          .then((r) => r.json())
+          .then((data) => {
+            setDeals(data.deals || []);
+            setPeople(data.people || []);
+            setLoaded(true);
+          })
+          .catch(() => setLoaded(true));
+      }, [authed]);
+
+      if (!authed) return <AuthGate onAuth={() => setAuthed(true)} />;
+
+      if (!loaded) return (
+        <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "#94a3b8", fontSize: "14px" }}>
+          Loading...
+        </div>
+      );
+
+      return (
+        <div style={{ minHeight: "100vh", background: "#f8f9fb" }}>
+          {/* Header */}
+          <div style={{ background: "#fff", borderBottom: "1px solid #eef0f4", padding: "0 32px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "32px" }}>
+              <h1 style={{ margin: 0, fontSize: "18px", fontWeight: 700, letterSpacing: "-0.02em", padding: "18px 0" }}>NR</h1>
+              <nav style={{ display: "flex", gap: "0" }}>
+                {[
+                  { id: "deals", label: "Deal Flow", icon: "\u25c6" },
+                  { id: "people", label: "People", icon: "\u25c9" },
+                ].map((tab) => (
+                  <button key={tab.id} onClick={() => setPage(tab.id)} style={{
+                    padding: "18px 20px", border: "none", background: "transparent",
+                    fontSize: "13.5px", fontWeight: 600,
+                    color: page === tab.id ? "#0f172a" : "#94a3b8",
+                    cursor: "pointer", fontFamily: "'DM Sans', sans-serif",
+                    borderBottom: page === tab.id ? "2px solid #6366f1" : "2px solid transparent",
+                    transition: "all 0.15s", display: "flex", alignItems: "center", gap: "6px",
+                  }}>
+                    <span style={{ fontSize: "10px" }}>{tab.icon}</span>
+                    {tab.label}
+                  </button>
+                ))}
+              </nav>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <span style={{
+                fontSize: "12px", color: "#94a3b8", background: "#f1f5f9",
+                padding: "5px 12px", borderRadius: "6px",
+                fontFamily: "'JetBrains Mono', monospace",
+              }}>
+                {deals.length} deals \u00b7 {people.length} people
+              </span>
+            </div>
+          </div>
+
+          {page === "deals" && <DealsPage deals={deals} setDeals={setDeals} />}
+          {page === "people" && <PeoplePage people={people} setPeople={setPeople} />}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
