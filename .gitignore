@@ -1,4 +1,1 @@
-node_modules/
-.env
-dealflow.db
-.npm-cache/
+.vercel
