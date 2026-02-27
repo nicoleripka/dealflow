@@ -1,4 +1,107 @@
 {
-  "deals": [],
-  "people": []
+  "deals": [
+    {
+      "id": 1,
+      "name": "Velvet",
+      "stage": "top_of_funnel",
+      "sector": "",
+      "contact": "",
+      "source": "Other",
+      "raised": "",
+      "date": "2026-02-26",
+      "notes": "YC F25"
+    },
+    {
+      "id": 2,
+      "name": "Standard Intelligence",
+      "stage": "top_of_funnel",
+      "sector": "",
+      "contact": "",
+      "source": "Other",
+      "raised": "",
+      "date": "2026-02-26",
+      "notes": ""
+    },
+    {
+      "id": 3,
+      "name": "General Magic",
+      "stage": "top_of_funnel",
+      "sector": "Insurtech / AI",
+      "contact": "Anthony Azrak",
+      "source": "LinkedIn",
+      "raised": "$7.2M",
+      "date": "2026-02-26",
+      "notes": "AI agents for insurance via SMS/iMessage/RCS. Led by Radical Ventures, a16z speedrun. Quote times from 30min to <3min."
+    },
+    {
+      "id": 4,
+      "name": "Luel",
+      "stage": "top_of_funnel",
+      "sector": "",
+      "contact": "",
+      "source": "Other",
+      "raised": "",
+      "date": "2026-02-26",
+      "notes": "YC"
+    },
+    {
+      "id": 5,
+      "name": "Baba Technologies",
+      "stage": "top_of_funnel",
+      "sector": "Health Tech / Assistive Devices",
+      "contact": "",
+      "source": "Other",
+      "raised": "",
+      "date": "2026-02-26",
+      "notes": "Smart glasses for people with dysarthria/motor impairments. Founded by ALS caregivers. Early stage, building first prototype. hello@babatech.io"
+    },
+    {
+      "id": 6,
+      "name": "Schematik",
+      "stage": "top_of_funnel",
+      "sector": "Developer Tools / Hardware",
+      "contact": "Samuel Beek",
+      "source": "Other",
+      "raised": "",
+      "date": "2026-02-26",
+      "notes": "Hardware dev platform — describe electronics in plain English, generates code + wiring diagrams. Supports Arduino/ESP32/RPi. Beta. Based in Europe. @samuelbeek"
+    },
+    {
+      "id": 7,
+      "name": "Sky Valley",
+      "stage": "top_of_funnel",
+      "sector": "Developer Tools / AI",
+      "contact": "Iris ten Teije, Noam Tenne",
+      "source": "Email",
+      "raised": "Raising $2M (≈$700K remaining)",
+      "date": "2026-02-20",
+      "notes": "Adaptive software exoskeleton — answering 'how do I make my software adaptive?' Originally positioned around capturing developer intent, now refocusing on differentiation. Looking to hire design engineers and invest in brand. Product: getdiffer.com | Deck: https://deck.skyvalley.ac/deck/bggt_lgDLI-d | Data room: https://deck.skyvalley.ac/r/bggt_lgDLI-d | Product doc: https://docs.google.com/document/d/14tfS7PENfOq3V5izCt7lTEzT-_CmEkQ30RWhrVqm0OU/edit | iris@skyvalley.ac, noam@skyvalley.ac"
+    }
+  ],
+  "people": [
+    {
+      "id": 1,
+      "name": "Ardra Hen",
+      "tag": "other",
+      "warmth": "new",
+      "company": "",
+      "role": "",
+      "email": "",
+      "source": "Other",
+      "date": "2026-02-26",
+      "notes": ""
+    },
+    {
+      "id": 2,
+      "name": "Lucas Gelfond",
+      "tag": "other",
+      "warmth": "new",
+      "company": "",
+      "role": "",
+      "email": "",
+      "source": "Other",
+      "date": "2026-02-26",
+      "notes": ""
+    }
+  ]
 }
