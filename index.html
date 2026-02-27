@@ -17,6 +17,7 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
     /* Auth gate */
     .auth-gate {
@@ -145,12 +146,13 @@
 
     /* ─── Board Card ─── */
 
-    const BoardCard = ({ deal }) => (
+    const BoardCard = ({ deal, onClick }) => (
       <div
+        onClick={() => onClick(deal)}
         style={{
           background: "#fff", borderRadius: "10px", padding: "14px 16px",
           marginBottom: "8px", boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
-          border: "1px solid #f1f5f9", cursor: "default", transition: "box-shadow 0.15s",
+          border: "1px solid #f1f5f9", cursor: "pointer", transition: "box-shadow 0.15s",
         }}
         onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)")}
         onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.06)")}
@@ -165,6 +167,115 @@
         </div>
       </div>
     );
+
+    /* ─── Deal Detail Panel ─── */
+
+    const DealDetail = ({ deal, onClose, onUpdate }) => {
+      const [form, setForm] = useState({ ...deal });
+      const update = (k, v) => {
+        const next = { ...form, [k]: v };
+        setForm(next);
+        onUpdate(next);
+      };
+
+      useEffect(() => setForm({ ...deal }), [deal.id]);
+
+      const fieldLabel = { fontSize: "11px", fontWeight: 600, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "6px" };
+      const fieldValue = { ...inputStyle, border: "1px solid transparent", padding: "8px 10px", borderRadius: "6px", background: "#f8fafc" };
+
+      return (
+        <div style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", justifyContent: "flex-end" }} onClick={onClose}>
+          <div style={{ position: "absolute", inset: 0, background: "rgba(15,23,42,0.25)", backdropFilter: "blur(2px)" }} />
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: "relative", width: "480px", maxWidth: "100%", background: "#fff",
+              boxShadow: "-8px 0 32px rgba(0,0,0,0.10)", overflowY: "auto",
+              animation: "slideIn 0.2s ease-out",
+            }}
+          >
+            {/* Header */}
+            <div style={{ padding: "24px 28px 0", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div style={{ flex: 1 }}>
+                <input
+                  value={form.name}
+                  onChange={(e) => update("name", e.target.value)}
+                  style={{
+                    width: "100%", border: "none", outline: "none", fontSize: "22px",
+                    fontWeight: 700, color: "#0f172a", fontFamily: "'DM Sans', sans-serif",
+                    background: "transparent", padding: "0", marginBottom: "8px",
+                  }}
+                />
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <SelectPill value={form.stage} options={DEAL_STAGES} mapObj={DEAL_STAGE_MAP}
+                    onChange={(v) => update("stage", v)} />
+                  <span style={{ fontSize: "12px", color: "#cbd5e1" }}>{form.date}</span>
+                </div>
+              </div>
+              <button onClick={onClose} style={{
+                border: "none", background: "#f1f5f9", borderRadius: "8px", width: "32px",
+                height: "32px", cursor: "pointer", fontSize: "16px", color: "#94a3b8",
+                display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+              }}>&times;</button>
+            </div>
+
+            <div style={{ padding: "24px 28px 32px", display: "flex", flexDirection: "column", gap: "20px" }}>
+              {/* Sector */}
+              <div>
+                <div style={fieldLabel}>Sector</div>
+                <input value={form.sector || ""} onChange={(e) => update("sector", e.target.value)}
+                  placeholder="e.g. Fintech, AI, SaaS" style={fieldValue}
+                  onFocus={(e) => (e.target.style.border = "1px solid #e2e8f0")}
+                  onBlur={(e) => (e.target.style.border = "1px solid transparent")} />
+              </div>
+
+              {/* Founder */}
+              <div>
+                <div style={fieldLabel}>Founder</div>
+                <input value={form.contact || ""} onChange={(e) => update("contact", e.target.value)}
+                  placeholder="Founder name" style={fieldValue}
+                  onFocus={(e) => (e.target.style.border = "1px solid #e2e8f0")}
+                  onBlur={(e) => (e.target.style.border = "1px solid transparent")} />
+              </div>
+
+              {/* Source + Raised */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                <div>
+                  <div style={fieldLabel}>Source</div>
+                  <select value={form.source} onChange={(e) => update("source", e.target.value)}
+                    style={{ ...fieldValue, cursor: "pointer" }}>
+                    {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <div style={fieldLabel}>Raising</div>
+                  <input value={form.raised || ""} onChange={(e) => update("raised", e.target.value)}
+                    placeholder="e.g. $2M" style={{ ...fieldValue, fontFamily: "'JetBrains Mono', monospace", fontSize: "13px" }}
+                    onFocus={(e) => (e.target.style.border = "1px solid #e2e8f0")}
+                    onBlur={(e) => (e.target.style.border = "1px solid transparent")} />
+                </div>
+              </div>
+
+              {/* Notes */}
+              <div>
+                <div style={fieldLabel}>Notes</div>
+                <textarea value={form.notes || ""} onChange={(e) => update("notes", e.target.value)}
+                  placeholder="Add notes..." rows={6}
+                  style={{ ...fieldValue, resize: "vertical", lineHeight: "1.6" }}
+                  onFocus={(e) => (e.target.style.border = "1px solid #e2e8f0")}
+                  onBlur={(e) => (e.target.style.border = "1px solid transparent")} />
+              </div>
+
+              {/* Done button */}
+              <button onClick={onClose} style={{
+                ...btnPrimary, width: "100%", padding: "14px",
+                fontSize: "15px", borderRadius: "10px", marginTop: "4px",
+              }}>Done</button>
+            </div>
+          </div>
+        </div>
+      );
+    };
 
     /* ─── Add Deal Modal ─── */
 
@@ -184,7 +295,7 @@
                 {DEAL_STAGES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
               </select>
               <input placeholder="Sector" value={form.sector} onChange={(e) => update("sector", e.target.value)} style={inputStyle} {...focusHandlers} />
-              <input placeholder="Contact" value={form.contact} onChange={(e) => update("contact", e.target.value)} style={inputStyle} {...focusHandlers} />
+              <input placeholder="Founder" value={form.contact} onChange={(e) => update("contact", e.target.value)} style={inputStyle} {...focusHandlers} />
               <select value={form.source} onChange={(e) => update("source", e.target.value)} style={{ ...inputStyle, cursor: "pointer" }}>
                 {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
@@ -250,6 +361,7 @@
       const [sortBy, setSortBy] = useState("date");
       const [sortDir, setSortDir] = useState("desc");
       const [showAdd, setShowAdd] = useState(false);
+      const [selectedDeal, setSelectedDeal] = useState(null);
 
       const filtered = useMemo(() => {
         let d = [...deals];
@@ -338,7 +450,7 @@
                 <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
                   <thead>
                     <tr style={{ borderBottom: "1px solid #f1f5f9" }}>
-                      {[{ key: "name", label: "Company" }, { key: "stage", label: "Stage" }, { key: null, label: "Sector" }, { key: null, label: "Contact" }, { key: null, label: "Source" }, { key: null, label: "Raising" }, { key: "date", label: "Date" }].map((col, i) => (
+                      {[{ key: "name", label: "Company" }, { key: "stage", label: "Stage" }, { key: null, label: "Sector" }, { key: null, label: "Founder" }, { key: null, label: "Source" }, { key: null, label: "Raising" }, { key: "date", label: "Date" }].map((col, i) => (
                         <th key={i} onClick={() => col.key && toggleSort(col.key)} style={{
                           padding: "12px 16px", textAlign: "left", fontWeight: 600, fontSize: "11px",
                           color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em",
@@ -351,14 +463,14 @@
                   </thead>
                   <tbody>
                     {filtered.map((deal) => (
-                      <tr key={deal.id} style={{ borderBottom: "1px solid #f8fafc", transition: "background 0.1s" }}
+                      <tr key={deal.id} onClick={() => setSelectedDeal(deal)} style={{ borderBottom: "1px solid #f8fafc", transition: "background 0.1s", cursor: "pointer" }}
                         onMouseEnter={(e) => (e.currentTarget.style.background = "#fafbfd")}
                         onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
                         <td style={{ padding: "12px 16px" }}>
                           <div style={{ fontWeight: 700, color: "#0f172a" }}>{deal.name}</div>
                           <div style={{ fontSize: "11px", color: "#94a3b8", marginTop: "2px", maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{deal.notes}</div>
                         </td>
-                        <td style={{ padding: "12px 16px" }}>
+                        <td style={{ padding: "12px 16px" }} onClick={(e) => e.stopPropagation()}>
                           <SelectPill value={deal.stage} options={DEAL_STAGES} mapObj={DEAL_STAGE_MAP}
                             onChange={(v) => setDeals((prev) => prev.map((d) => d.id === deal.id ? { ...d, stage: v } : d))} />
                         </td>
@@ -391,7 +503,7 @@
                         <span style={{ fontSize: "11px", color: "#94a3b8", background: "#f1f5f9", borderRadius: "999px", padding: "1px 8px", fontWeight: 600 }}>{stageDeals.length}</span>
                       </div>
                       <div style={{ background: "#f1f5f9", borderRadius: "12px", padding: "8px", minHeight: "120px" }}>
-                        {stageDeals.map((deal) => <BoardCard key={deal.id} deal={deal} />)}
+                        {stageDeals.map((deal) => <BoardCard key={deal.id} deal={deal} onClick={setSelectedDeal} />)}
                       </div>
                     </div>
                   );
@@ -400,6 +512,14 @@
             )}
           </div>
           {showAdd && <AddDealModal onClose={() => setShowAdd(false)} onAdd={(deal) => setDeals((prev) => [deal, ...prev])} />}
+          {selectedDeal && <DealDetail
+            deal={selectedDeal}
+            onClose={() => setSelectedDeal(null)}
+            onUpdate={(updated) => {
+              setDeals((prev) => prev.map((d) => d.id === updated.id ? updated : d));
+              setSelectedDeal(updated);
+            }}
+          />}
         </>
       );
     };
