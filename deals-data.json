@@ -113,6 +113,18 @@
       "source": "Other",
       "date": "2026-02-26",
       "notes": ""
+    },
+    {
+      "id": 3,
+      "name": "Minqi Jiang",
+      "tag": "founder",
+      "warmth": "new",
+      "company": "Google DeepMind / Meta AI",
+      "role": "AI Researcher",
+      "email": "",
+      "source": "Twitter",
+      "date": "2026-02-27",
+      "notes": "Open-ended AI + RL researcher. Previously UCL CS + Meta FAIR, now Google DeepMind. Published Generative Data Refinement, JaxMARL, Rainbow Teaming. Based in Oxford. minch.co | @MinqiJiang"
     }
   ]
 }
