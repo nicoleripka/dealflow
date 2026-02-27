@@ -87,6 +87,28 @@
       "raised": "",
       "date": "2026-02-27",
       "notes": "Deck: https://www.figma.com/deck/T6OUqwsGjUKncGzHw70JrB/Company-Picnic---Deck-.1?node-id=183-566"
+    },
+    {
+      "id": 9,
+      "name": "Inflight",
+      "stage": "top_of_funnel",
+      "sector": "Design Tools / AI",
+      "contact": "Kyle Barber, Veer Gadodia, Michael Riddering",
+      "source": "Other",
+      "raised": "Series A",
+      "date": "2026-02-27",
+      "notes": "AI-native feedback platform for product teams — get quality feedback from peers, users, investors in hours not days. South Park Commons. Founders: Kyle Barber (ex-Airchat/Facebook/Tinder design), Veer Gadodia (MIT CS, ex-Airchat, AI/distributed systems), Michael Riddering (creator of Dive & Figma Academy, founding designer at Maven). Backed by Kindred Ventures. inflight.co"
+    },
+    {
+      "id": 10,
+      "name": "Courtroom",
+      "stage": "top_of_funnel",
+      "sector": "Legal Tech / AI",
+      "contact": "",
+      "source": "Other",
+      "raised": "",
+      "date": "2026-02-27",
+      "notes": "AI-powered courtroom simulation for litigation teams. Two products: Juries AI (simulate jurors for case strategy) and Judges AI (battle-test briefs against simulated sitting judges). Claims 82.1% accuracy. Serves AmLaw 10/50/100/200 firms. Founded by Big Law alumni. courtroom.ai"
     }
   ],
   "people": [
@@ -125,6 +147,42 @@
       "source": "Twitter",
       "date": "2026-02-27",
       "notes": "Open-ended AI + RL researcher. Previously UCL CS + Meta FAIR, now Google DeepMind. Published Generative Data Refinement, JaxMARL, Rainbow Teaming. Based in Oxford. minch.co | @MinqiJiang"
+    },
+    {
+      "id": 4,
+      "name": "Ali Partovi",
+      "tag": "investor",
+      "warmth": "new",
+      "company": "Neo",
+      "role": "Founder & CEO",
+      "email": "",
+      "source": "Other",
+      "date": "2026-02-27",
+      "notes": "Founded Neo in 2017. Harvard CS. Early investor in Facebook, Cursor, Kalshi, Bluesky. Twin brother of Hadi Partovi (Code.org). Neo Residency program: $750K uncapped SAFE, 3-month SF workspace, Oregon bootcamp. Portfolio includes Cursor ($30B), Cognition ($4B), Pika Labs ($700M), Moment, Anterior. neo.com | @apartovi"
+    },
+    {
+      "id": 5,
+      "name": "Suzanne Xie",
+      "tag": "investor",
+      "warmth": "new",
+      "company": "Neo",
+      "role": "Partner",
+      "email": "",
+      "source": "Other",
+      "date": "2026-02-27",
+      "notes": "Partner at Neo alongside Ali Partovi and Emily Cohen. Runs Neo Scholars program ($20K grants for gap semesters, no equity)."
+    },
+    {
+      "id": 6,
+      "name": "Emily Cohen",
+      "tag": "investor",
+      "warmth": "new",
+      "company": "Neo",
+      "role": "Partner",
+      "email": "",
+      "source": "Other",
+      "date": "2026-02-27",
+      "notes": "Partner at Neo alongside Ali Partovi and Suzanne Xie. Writes Neo News (neo.substack.com). Runs Neo Scholars and Neo Residency programs."
     }
   ]
 }
