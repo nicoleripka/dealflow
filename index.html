@@ -18,6 +18,9 @@
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    .board-col-drop { outline: 2px dashed #6366f1; outline-offset: -2px; background: #eef2ff !important; }
+    [draggable="true"] { cursor: grab; }
+    [draggable="true"]:active { cursor: grabbing; opacity: 0.6; }
 
     /* Auth gate */
     .auth-gate {
@@ -66,7 +69,7 @@
 <body>
   <div id="root"></div>
   <script type="text/babel" data-type="module">
-    const { useState, useEffect, useMemo, useCallback } = React;
+    const { useState, useEffect, useMemo, useCallback, useRef } = React;
 
     /* ─── Constants ─── */
 
@@ -146,13 +149,20 @@
 
     /* ─── Board Card ─── */
 
-    const BoardCard = ({ deal, onClick }) => (
+    const BoardCard = ({ deal, onClick, onDragStart, onDragEnd }) => (
       <div
+        draggable
+        onDragStart={(e) => {
+          e.dataTransfer.effectAllowed = "move";
+          e.dataTransfer.setData("text/plain", String(deal.id));
+          setTimeout(() => onDragStart && onDragStart(deal.id), 0);
+        }}
+        onDragEnd={() => onDragEnd && onDragEnd()}
         onClick={() => onClick(deal)}
         style={{
           background: "#fff", borderRadius: "10px", padding: "14px 16px",
           marginBottom: "8px", boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
-          border: "1px solid #f1f5f9", cursor: "pointer", transition: "box-shadow 0.15s",
+          border: "1px solid #f1f5f9", transition: "box-shadow 0.15s",
         }}
         onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)")}
         onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.06)")}
@@ -363,6 +373,68 @@
       const [showAdd, setShowAdd] = useState(false);
       const [selectedDeal, setSelectedDeal] = useState(null);
 
+      /* Inline edit state */
+      const [editingCell, setEditingCell] = useState(null); // { dealId, field }
+      const [editValue, setEditValue] = useState("");
+      const clickTimerRef = useRef(null);
+
+      const startEdit = (dealId, field, currentValue, e) => {
+        e.stopPropagation();
+        clearTimeout(clickTimerRef.current);
+        setEditingCell({ dealId, field });
+        setEditValue(currentValue || "");
+      };
+
+      const saveEdit = () => {
+        if (editingCell) {
+          setDeals((prev) => prev.map((d) =>
+            d.id === editingCell.dealId ? { ...d, [editingCell.field]: editValue } : d
+          ));
+          setEditingCell(null);
+        }
+      };
+
+      const cancelEdit = () => setEditingCell(null);
+
+      const handleRowClick = (deal) => {
+        if (editingCell) return;
+        clickTimerRef.current = setTimeout(() => setSelectedDeal(deal), 280);
+      };
+
+      const isEd = (dealId, field) => editingCell?.dealId === dealId && editingCell?.field === field;
+
+      const editInput = (field) => (
+        <input
+          value={editValue}
+          onChange={(e) => setEditValue(e.target.value)}
+          onBlur={saveEdit}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") saveEdit();
+            if (e.key === "Escape") cancelEdit();
+          }}
+          autoFocus
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            width: "100%", padding: "4px 8px", borderRadius: "6px",
+            border: "1.5px solid #6366f1", fontSize: "13px", outline: "none",
+            background: "#fff", boxSizing: "border-box",
+            fontFamily: field === "raised" ? "'JetBrains Mono', monospace" : "'DM Sans', sans-serif",
+          }}
+        />
+      );
+
+      /* Drag & drop state */
+      const [dragOverStage, setDragOverStage] = useState(null);
+
+      const handleDrop = (stageId, e) => {
+        e.preventDefault();
+        const dealId = parseInt(e.dataTransfer.getData("text/plain"));
+        if (!isNaN(dealId)) {
+          setDeals((prev) => prev.map((d) => d.id === dealId ? { ...d, stage: stageId } : d));
+        }
+        setDragOverStage(null);
+      };
+
       const filtered = useMemo(() => {
         let d = [...deals];
         if (filter !== "all") d = d.filter((deal) => deal.stage === filter);
@@ -463,7 +535,7 @@
                   </thead>
                   <tbody>
                     {filtered.map((deal) => (
-                      <tr key={deal.id} onClick={() => setSelectedDeal(deal)} style={{ borderBottom: "1px solid #f8fafc", transition: "background 0.1s", cursor: "pointer" }}
+                      <tr key={deal.id} onClick={() => handleRowClick(deal)} style={{ borderBottom: "1px solid #f8fafc", transition: "background 0.1s", cursor: "pointer" }}
                         onMouseEnter={(e) => (e.currentTarget.style.background = "#fafbfd")}
                         onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
                         <td style={{ padding: "12px 16px" }}>
@@ -474,10 +546,18 @@
                           <SelectPill value={deal.stage} options={DEAL_STAGES} mapObj={DEAL_STAGE_MAP}
                             onChange={(v) => setDeals((prev) => prev.map((d) => d.id === deal.id ? { ...d, stage: v } : d))} />
                         </td>
-                        <td style={{ padding: "12px 16px", color: "#334155" }}>{deal.sector}</td>
-                        <td style={{ padding: "12px 16px", color: "#334155" }}>{deal.contact}</td>
-                        <td style={{ padding: "12px 16px", color: "#94a3b8", fontSize: "12px" }}>{deal.source}</td>
-                        <td style={{ padding: "12px 16px", fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "#334155" }}>{deal.raised}</td>
+                        <td style={{ padding: "12px 16px", color: "#334155", cursor: "text" }} onDoubleClick={(e) => startEdit(deal.id, "sector", deal.sector, e)}>
+                          {isEd(deal.id, "sector") ? editInput("sector") : (deal.sector || <span style={{ color: "#cbd5e1", fontSize: "12px" }}>&mdash;</span>)}
+                        </td>
+                        <td style={{ padding: "12px 16px", color: "#334155", cursor: "text" }} onDoubleClick={(e) => startEdit(deal.id, "contact", deal.contact, e)}>
+                          {isEd(deal.id, "contact") ? editInput("contact") : (deal.contact || <span style={{ color: "#cbd5e1", fontSize: "12px" }}>&mdash;</span>)}
+                        </td>
+                        <td style={{ padding: "12px 16px", color: "#94a3b8", fontSize: "12px", cursor: "text" }} onDoubleClick={(e) => startEdit(deal.id, "source", deal.source, e)}>
+                          {isEd(deal.id, "source") ? editInput("source") : (deal.source || <span style={{ color: "#cbd5e1", fontSize: "12px" }}>&mdash;</span>)}
+                        </td>
+                        <td style={{ padding: "12px 16px", fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "#334155", cursor: "text" }} onDoubleClick={(e) => startEdit(deal.id, "raised", deal.raised, e)}>
+                          {isEd(deal.id, "raised") ? editInput("raised") : (deal.raised || <span style={{ color: "#cbd5e1", fontSize: "12px" }}>&mdash;</span>)}
+                        </td>
                         <td style={{ padding: "12px 16px", color: "#94a3b8", fontSize: "12px", whiteSpace: "nowrap" }}>{deal.date}</td>
                       </tr>
                     ))}
@@ -494,7 +574,8 @@
             ) : (
               <div style={{ display: "grid", gridTemplateColumns: `repeat(${DEAL_STAGES.length}, minmax(180px, 1fr))`, gap: "12px", overflowX: "auto", paddingBottom: "16px" }}>
                 {DEAL_STAGES.map((stage) => {
-                  const stageDeals = deals.filter((d) => d.stage === stage.id);
+                  const stageDeals = filtered.filter((d) => d.stage === stage.id);
+                  const isOver = dragOverStage === stage.id;
                   return (
                     <div key={stage.id}>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px", padding: "0 4px" }}>
@@ -502,8 +583,25 @@
                         <span style={{ fontWeight: 700, fontSize: "12px", color: "#334155" }}>{stage.label}</span>
                         <span style={{ fontSize: "11px", color: "#94a3b8", background: "#f1f5f9", borderRadius: "999px", padding: "1px 8px", fontWeight: 600 }}>{stageDeals.length}</span>
                       </div>
-                      <div style={{ background: "#f1f5f9", borderRadius: "12px", padding: "8px", minHeight: "120px" }}>
-                        {stageDeals.map((deal) => <BoardCard key={deal.id} deal={deal} onClick={setSelectedDeal} />)}
+                      <div
+                        className={isOver ? "board-col-drop" : ""}
+                        onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; setDragOverStage(stage.id); }}
+                        onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setDragOverStage(null); }}
+                        onDrop={(e) => handleDrop(stage.id, e)}
+                        style={{
+                          background: isOver ? "#eef2ff" : "#f1f5f9", borderRadius: "12px", padding: "8px", minHeight: "120px",
+                          transition: "background 0.15s, outline 0.15s",
+                        }}
+                      >
+                        {stageDeals.map((deal) => (
+                          <BoardCard key={deal.id} deal={deal} onClick={setSelectedDeal}
+                            onDragStart={() => {}} onDragEnd={() => setDragOverStage(null)} />
+                        ))}
+                        {stageDeals.length === 0 && (
+                          <div style={{ padding: "20px 8px", textAlign: "center", fontSize: "11px", color: "#cbd5e1" }}>
+                            {isOver ? "Drop here" : "No deals"}
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
