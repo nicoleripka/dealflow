@@ -3,6 +3,7 @@
     {
       "id": 1,
       "name": "Velvet",
+      "pitch": "",
       "stage": "top_of_funnel",
       "sector": "",
       "contact": "",
@@ -14,6 +15,7 @@
     {
       "id": 2,
       "name": "Standard Intelligence",
+      "pitch": "",
       "stage": "top_of_funnel",
       "sector": "",
       "contact": "",
@@ -25,17 +27,19 @@
     {
       "id": 3,
       "name": "General Magic",
+      "pitch": "AI agents for insurance via SMS/iMessage/RCS",
       "stage": "top_of_funnel",
       "sector": "Insurtech / AI",
       "contact": "Anthony Azrak",
       "source": "LinkedIn",
       "raised": "$7.2M",
       "date": "2026-02-26",
-      "notes": "AI agents for insurance via SMS/iMessage/RCS. Led by Radical Ventures, a16z speedrun. Quote times from 30min to <3min."
+      "notes": "Led by Radical Ventures, a16z speedrun. Quote times from 30min to <3min."
     },
     {
       "id": 4,
       "name": "Luel",
+      "pitch": "",
       "stage": "top_of_funnel",
       "sector": "",
       "contact": "",
@@ -47,39 +51,43 @@
     {
       "id": 5,
       "name": "Baba Technologies",
+      "pitch": "Smart glasses for people with dysarthria/motor impairments",
       "stage": "top_of_funnel",
       "sector": "Health Tech / Assistive Devices",
       "contact": "",
       "source": "Other",
       "raised": "",
       "date": "2026-02-26",
-      "notes": "Smart glasses for people with dysarthria/motor impairments. Founded by ALS caregivers. Early stage, building first prototype. hello@babatech.io"
+      "notes": "Founded by ALS caregivers. Early stage, building first prototype. hello@babatech.io"
     },
     {
       "id": 6,
       "name": "Schematik",
+      "pitch": "Describe electronics in plain English, get code + wiring diagrams",
       "stage": "top_of_funnel",
       "sector": "Developer Tools / Hardware",
       "contact": "Samuel Beek",
       "source": "Other",
       "raised": "",
       "date": "2026-02-26",
-      "notes": "Hardware dev platform — describe electronics in plain English, generates code + wiring diagrams. Supports Arduino/ESP32/RPi. Beta. Based in Europe. @samuelbeek"
+      "notes": "Supports Arduino/ESP32/RPi. Beta. Based in Europe. @samuelbeek"
     },
     {
       "id": 7,
       "name": "Sky Valley",
+      "pitch": "Adaptive software exoskeleton — make any software adaptive",
       "stage": "top_of_funnel",
       "sector": "Developer Tools / AI",
       "contact": "Iris ten Teije, Noam Tenne",
       "source": "Email",
       "raised": "Raising $2M (≈$700K remaining)",
       "date": "2026-02-20",
-      "notes": "Adaptive software exoskeleton — answering 'how do I make my software adaptive?' Originally positioned around capturing developer intent, now refocusing on differentiation. Looking to hire design engineers and invest in brand. Product: getdiffer.com | Deck: https://deck.skyvalley.ac/deck/bggt_lgDLI-d | Data room: https://deck.skyvalley.ac/r/bggt_lgDLI-d | Product doc: https://docs.google.com/document/d/14tfS7PENfOq3V5izCt7lTEzT-_CmEkQ30RWhrVqm0OU/edit | iris@skyvalley.ac, noam@skyvalley.ac"
+      "notes": "Originally positioned around capturing developer intent, now refocusing on differentiation. Looking to hire design engineers and invest in brand. Product: getdiffer.com | Deck: https://deck.skyvalley.ac/deck/bggt_lgDLI-d | Data room: https://deck.skyvalley.ac/r/bggt_lgDLI-d | Product doc: https://docs.google.com/document/d/14tfS7PENfOq3V5izCt7lTEzT-_CmEkQ30RWhrVqm0OU/edit | iris@skyvalley.ac, noam@skyvalley.ac"
     },
     {
       "id": 8,
       "name": "Company Picnic",
+      "pitch": "",
       "stage": "top_of_funnel",
       "sector": "",
       "contact": "",
@@ -91,24 +99,26 @@
     {
       "id": 9,
       "name": "Inflight",
+      "pitch": "AI-native feedback for product teams — quality feedback in hours, not days",
       "stage": "top_of_funnel",
       "sector": "Design Tools / AI",
       "contact": "Kyle Barber, Veer Gadodia, Michael Riddering",
       "source": "Other",
       "raised": "Series A",
       "date": "2026-02-27",
-      "notes": "AI-native feedback platform for product teams — get quality feedback from peers, users, investors in hours not days. South Park Commons. Founders: Kyle Barber (ex-Airchat/Facebook/Tinder design), Veer Gadodia (MIT CS, ex-Airchat, AI/distributed systems), Michael Riddering (creator of Dive & Figma Academy, founding designer at Maven). Backed by Kindred Ventures. inflight.co"
+      "notes": "South Park Commons. Founders: Kyle Barber (ex-Airchat/Facebook/Tinder design), Veer Gadodia (MIT CS, ex-Airchat, AI/distributed systems), Michael Riddering (creator of Dive & Figma Academy, founding designer at Maven). Backed by Kindred Ventures. inflight.co"
     },
     {
       "id": 10,
       "name": "Courtroom",
+      "pitch": "AI-powered jury + judge simulation for litigation teams",
       "stage": "top_of_funnel",
       "sector": "Legal Tech / AI",
       "contact": "",
       "source": "Other",
       "raised": "",
       "date": "2026-02-27",
-      "notes": "AI-powered courtroom simulation for litigation teams. Two products: Juries AI (simulate jurors for case strategy) and Judges AI (battle-test briefs against simulated sitting judges). Claims 82.1% accuracy. Serves AmLaw 10/50/100/200 firms. Founded by Big Law alumni. courtroom.ai"
+      "notes": "Two products: Juries AI (simulate jurors for case strategy) and Judges AI (battle-test briefs against simulated sitting judges). Claims 82.1% accuracy. Serves AmLaw 10/50/100/200 firms. Founded by Big Law alumni. courtroom.ai"
     }
   ],
   "people": [
@@ -148,41 +158,5 @@
       "date": "2026-02-27",
       "notes": "Open-ended AI + RL researcher. Previously UCL CS + Meta FAIR, now Google DeepMind. Published Generative Data Refinement, JaxMARL, Rainbow Teaming. Based in Oxford. minch.co | @MinqiJiang"
     },
-    {
-      "id": 4,
-      "name": "Ali Partovi",
-      "tag": "investor",
-      "warmth": "new",
-      "company": "Neo",
-      "role": "Founder & CEO",
-      "email": "",
-      "source": "Other",
-      "date": "2026-02-27",
-      "notes": "Founded Neo in 2017. Harvard CS. Early investor in Facebook, Cursor, Kalshi, Bluesky. Twin brother of Hadi Partovi (Code.org). Neo Residency program: $750K uncapped SAFE, 3-month SF workspace, Oregon bootcamp. Portfolio includes Cursor ($30B), Cognition ($4B), Pika Labs ($700M), Moment, Anterior. neo.com | @apartovi"
-    },
-    {
-      "id": 5,
-      "name": "Suzanne Xie",
-      "tag": "investor",
-      "warmth": "new",
-      "company": "Neo",
-      "role": "Partner",
-      "email": "",
-      "source": "Other",
-      "date": "2026-02-27",
-      "notes": "Partner at Neo alongside Ali Partovi and Emily Cohen. Runs Neo Scholars program ($20K grants for gap semesters, no equity)."
-    },
-    {
-      "id": 6,
-      "name": "Emily Cohen",
-      "tag": "investor",
-      "warmth": "new",
-      "company": "Neo",
-      "role": "Partner",
-      "email": "",
-      "source": "Other",
-      "date": "2026-02-27",
-      "notes": "Partner at Neo alongside Ali Partovi and Suzanne Xie. Writes Neo News (neo.substack.com). Runs Neo Scholars and Neo Residency programs."
-    }
   ]
 }
