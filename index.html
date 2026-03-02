@@ -456,6 +456,18 @@
         setDragOverStage(null);
       };
 
+      const STAGE_PRIORITY = {
+        diligence: 0,
+        deal_process: 1,
+        want_to_meet: 2,
+        tracking: 3,
+        top_of_funnel: 4,
+        closed: 5,
+        passed: 6,
+        to_pass: 7,
+        initial_pass: 8,
+      };
+
       const filtered = useMemo(() => {
         let d = [...deals];
         if (filter !== "all") d = d.filter((deal) => deal.stage === filter);
@@ -470,10 +482,15 @@
           );
         }
         d.sort((a, b) => {
+          if (sortBy === "date") {
+            const stageCmp = (STAGE_PRIORITY[a.stage] ?? 99) - (STAGE_PRIORITY[b.stage] ?? 99);
+            if (stageCmp !== 0) return stageCmp;
+            const dateCmp = (a.date || "").localeCompare(b.date || "");
+            return sortDir === "desc" ? -dateCmp : dateCmp;
+          }
           let cmp = 0;
-          if (sortBy === "date") cmp = (a.date || "").localeCompare(b.date || "");
-          else if (sortBy === "name") cmp = (a.name || "").localeCompare(b.name || "");
-          else if (sortBy === "stage") cmp = DEAL_STAGES.findIndex((s) => s.id === a.stage) - DEAL_STAGES.findIndex((s) => s.id === b.stage);
+          if (sortBy === "name") cmp = (a.name || "").localeCompare(b.name || "");
+          else if (sortBy === "stage") cmp = (STAGE_PRIORITY[a.stage] ?? 99) - (STAGE_PRIORITY[b.stage] ?? 99);
           return sortDir === "desc" ? -cmp : cmp;
         });
         return d;
