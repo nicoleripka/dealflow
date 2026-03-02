@@ -697,6 +697,120 @@
 
     /* ─── People Page ─── */
 
+    /* ─── Person Detail Panel ─── */
+
+    const PersonDetail = ({ person, onClose, onUpdate }) => {
+      const [form, setForm] = useState({ ...person });
+      const update = (k, v) => {
+        const next = { ...form, [k]: v };
+        setForm(next);
+        onUpdate(next);
+      };
+
+      useEffect(() => setForm({ ...person }), [person.id]);
+
+      const fieldLabel = { fontSize: "11px", fontWeight: 600, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "6px" };
+      const fieldValue = { ...inputStyle, border: "1px solid transparent", padding: "8px 10px", borderRadius: "6px", background: "#f8fafc" };
+
+      const linkedinUrl = getLinkedinUrl(form.notes);
+
+      return (
+        <div style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", justifyContent: "flex-end" }} onClick={onClose}>
+          <div style={{ position: "absolute", inset: 0, background: "rgba(15,23,42,0.25)", backdropFilter: "blur(2px)" }} />
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: "relative", width: "480px", maxWidth: "100%", background: "#fff",
+              boxShadow: "-8px 0 32px rgba(0,0,0,0.10)", overflowY: "auto",
+              animation: "slideIn 0.2s ease-out",
+            }}
+          >
+            {/* Header */}
+            <div style={{ padding: "24px 28px 0", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div style={{ flex: 1 }}>
+                <input
+                  value={form.name}
+                  onChange={(e) => update("name", e.target.value)}
+                  style={{
+                    width: "100%", border: "none", outline: "none", fontSize: "22px",
+                    fontWeight: 700, color: "#0f172a", fontFamily: "'DM Sans', sans-serif",
+                    background: "transparent", padding: "0", marginBottom: "8px",
+                  }}
+                />
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <SelectPill value={form.tag} options={PEOPLE_TAGS} mapObj={TAG_MAP}
+                    onChange={(v) => update("tag", v)} />
+                  <SelectPill value={form.warmth} options={WARMTH} mapObj={WARMTH_MAP}
+                    onChange={(v) => update("warmth", v)} />
+                  {linkedinUrl && <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: "12px", color: "#6366f1", textDecoration: "none", fontWeight: 500 }}>LinkedIn &rarr;</a>}
+                  <span style={{ fontSize: "12px", color: "#cbd5e1" }}>{form.date}</span>
+                </div>
+              </div>
+              <button onClick={onClose} style={{
+                border: "none", background: "#f1f5f9", borderRadius: "8px", width: "32px",
+                height: "32px", cursor: "pointer", fontSize: "16px", color: "#94a3b8",
+                display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+              }}>&times;</button>
+            </div>
+
+            <div style={{ padding: "24px 28px 32px", display: "flex", flexDirection: "column", gap: "20px" }}>
+              {/* Company + Role */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                <div>
+                  <div style={fieldLabel}>Company</div>
+                  <input value={form.company || ""} onChange={(e) => update("company", e.target.value)}
+                    placeholder="Company name" style={fieldValue}
+                    onFocus={(e) => (e.target.style.border = "1px solid #e2e8f0")}
+                    onBlur={(e) => (e.target.style.border = "1px solid transparent")} />
+                </div>
+                <div>
+                  <div style={fieldLabel}>Role</div>
+                  <input value={form.role || ""} onChange={(e) => update("role", e.target.value)}
+                    placeholder="Title / Role" style={fieldValue}
+                    onFocus={(e) => (e.target.style.border = "1px solid #e2e8f0")}
+                    onBlur={(e) => (e.target.style.border = "1px solid transparent")} />
+                </div>
+              </div>
+
+              {/* Email */}
+              <div>
+                <div style={fieldLabel}>Email</div>
+                <input value={form.email || ""} onChange={(e) => update("email", e.target.value)}
+                  placeholder="email@example.com" style={fieldValue}
+                  onFocus={(e) => (e.target.style.border = "1px solid #e2e8f0")}
+                  onBlur={(e) => (e.target.style.border = "1px solid transparent")} />
+              </div>
+
+              {/* Source */}
+              <div>
+                <div style={fieldLabel}>Source</div>
+                <select value={form.source} onChange={(e) => update("source", e.target.value)}
+                  style={{ ...fieldValue, cursor: "pointer" }}>
+                  {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+
+              {/* Notes */}
+              <div>
+                <div style={fieldLabel}>Notes</div>
+                <textarea value={form.notes || ""} onChange={(e) => update("notes", e.target.value)}
+                  placeholder="Add notes..." rows={6}
+                  style={{ ...fieldValue, resize: "vertical", lineHeight: "1.6" }}
+                  onFocus={(e) => (e.target.style.border = "1px solid #e2e8f0")}
+                  onBlur={(e) => (e.target.style.border = "1px solid transparent")} />
+              </div>
+
+              {/* Done button */}
+              <button onClick={onClose} style={{
+                ...btnPrimary, width: "100%", padding: "14px",
+                fontSize: "15px", borderRadius: "10px", marginTop: "4px",
+              }}>Done</button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
     const PeoplePage = ({ people, setPeople }) => {
       const [filter, setFilter] = useState("all");
       const [warmthFilter, setWarmthFilter] = useState("all");
@@ -704,6 +818,7 @@
       const [sortBy, setSortBy] = useState("date");
       const [sortDir, setSortDir] = useState("desc");
       const [showAdd, setShowAdd] = useState(false);
+      const [selectedPerson, setSelectedPerson] = useState(null);
 
       const filtered = useMemo(() => {
         let p = [...people];
@@ -806,7 +921,7 @@
                 </thead>
                 <tbody>
                   {filtered.map((person) => (
-                    <tr key={person.id} style={{ borderBottom: "1px solid #f8fafc", transition: "background 0.1s" }}
+                    <tr key={person.id} onClick={() => setSelectedPerson(person)} style={{ borderBottom: "1px solid #f8fafc", transition: "background 0.1s", cursor: "pointer" }}
                       onMouseEnter={(e) => (e.currentTarget.style.background = "#fafbfd")}
                       onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
                       <td style={{ padding: "12px 16px" }}>
@@ -854,6 +969,14 @@
             </div>
           </div>
           {showAdd && <AddPersonModal onClose={() => setShowAdd(false)} onAdd={(person) => setPeople((prev) => [person, ...prev])} />}
+          {selectedPerson && <PersonDetail
+            person={selectedPerson}
+            onClose={() => setSelectedPerson(null)}
+            onUpdate={(updated) => {
+              setPeople((prev) => prev.map((p) => p.id === updated.id ? updated : p));
+              setSelectedPerson(updated);
+            }}
+          />}
         </>
       );
     };

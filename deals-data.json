@@ -181,6 +181,32 @@
       "raised": "",
       "date": "2026-03-02",
       "notes": "In stealth — co-founding with Samuel Gill. Jim prev Director of Engineering at Datadog. Visiting Expert at Antler, Mentor at ERA. Engineering leader across Series A–C scale. Oberlin College. SF-based. linkedin.com/in/jimwoodroffe"
+    },
+    {
+      "id": 16,
+      "name": "Minqi Jiang New Co",
+      "pitch": "Open-ended AI + RL research",
+      "stage": "top_of_funnel",
+      "sector": "AI / Research",
+      "contact": "Minqi Jiang",
+      "contact_method": "",
+      "source": "Twitter",
+      "raised": "",
+      "date": "2026-02-27",
+      "notes": "Open-ended AI + RL researcher. Previously UCL CS + Meta FAIR, now Google DeepMind. Published Generative Data Refinement, JaxMARL, Rainbow Teaming. Based in Oxford. minch.co | @MinqiJiang"
+    },
+    {
+      "id": 17,
+      "name": "Terac",
+      "pitch": "Specialized experts on-demand to power frontier research",
+      "stage": "top_of_funnel",
+      "sector": "AI / Talent",
+      "contact": "Zachary Baker",
+      "contact_method": "",
+      "source": "LinkedIn",
+      "raised": "",
+      "date": "2026-03-02",
+      "notes": "Co-Founded by Zachary Baker. Angel investor (a37, Nexa Labs, Clado, Shofo). Z Fellows. Prev ML Engineer at Radical Health, ML Researcher at MIT. UCL. SF-based. zac@terac.com | linkedin.com/in/zacharyrbaker"
     }
   ],
   "people": [
@@ -209,18 +235,6 @@
       "notes": ""
     },
     {
-      "id": 3,
-      "name": "Minqi Jiang",
-      "tag": "founder",
-      "warmth": "new",
-      "company": "Google DeepMind / Meta AI",
-      "role": "AI Researcher",
-      "email": "",
-      "source": "Twitter",
-      "date": "2026-02-27",
-      "notes": "Open-ended AI + RL researcher. Previously UCL CS + Meta FAIR, now Google DeepMind. Published Generative Data Refinement, JaxMARL, Rainbow Teaming. Based in Oxford. minch.co | @MinqiJiang"
-    },
-    {
       "id": 5,
       "name": "Sara Hooker",
       "tag": "founder",
@@ -243,18 +257,6 @@
       "source": "Other",
       "date": "2026-03-02",
       "notes": "Building for the US government at the National Design Studio. Interests: product design, fullstack dev, molecular gastronomy. adambhaloo.com"
-    },
-    {
-      "id": 7,
-      "name": "Zachary Baker",
-      "tag": "founder",
-      "warmth": "new",
-      "company": "Terac",
-      "role": "Co-Founder",
-      "email": "zac@terac.com",
-      "source": "LinkedIn",
-      "date": "2026-03-02",
-      "notes": "Co-Founder @ Terac — specialized experts on-demand to power frontier research. Angel investor (a37, Nexa Labs, Clado, Shofo). Z Fellows. Prev ML Engineer at Radical Health, ML Researcher at MIT. UCL. SF-based. linkedin.com/in/zacharyrbaker"
     },
     {
       "id": 8,
