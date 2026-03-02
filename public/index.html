@@ -907,36 +907,44 @@
 
       useEffect(() => {
         if (!authed) return;
-        const savedDeals = localStorage.getItem("nr_deals");
-        const savedPeople = localStorage.getItem("nr_people");
-        if (savedDeals && savedPeople) {
-          setDeals(JSON.parse(savedDeals));
-          setPeople(JSON.parse(savedPeople));
-          setLoaded(true);
-          // Also fetch fresh data to merge any new entries from deploys
-          fetch("./deals-data.json")
-            .then((r) => r.json())
-            .then((data) => {
-              const localDeals = JSON.parse(savedDeals);
-              const localPeople = JSON.parse(savedPeople);
-              const localDealIds = new Set(localDeals.map((d) => d.id));
-              const localPeopleIds = new Set(localPeople.map((p) => p.id));
-              const newDeals = (data.deals || []).filter((d) => !localDealIds.has(d.id));
-              const newPeople = (data.people || []).filter((p) => !localPeopleIds.has(p.id));
-              if (newDeals.length > 0) setDeals((prev) => [...prev, ...newDeals]);
-              if (newPeople.length > 0) setPeople((prev) => [...prev, ...newPeople]);
-            })
-            .catch(() => {});
-        } else {
-          fetch("./deals-data.json")
-            .then((r) => r.json())
-            .then((data) => {
-              setDeals(data.deals || []);
-              setPeople(data.people || []);
-              setLoaded(true);
-            })
-            .catch(() => setLoaded(true));
-        }
+        fetch("./deals-data.json")
+          .then((r) => r.json())
+          .then((data) => {
+            const serverDeals = data.deals || [];
+            const serverPeople = data.people || [];
+            // Merge localStorage edits on top of server data
+            const savedDeals = localStorage.getItem("nr_deals");
+            const savedPeople = localStorage.getItem("nr_people");
+            if (savedDeals) {
+              const localMap = Object.fromEntries(JSON.parse(savedDeals).map((d) => [d.id, d]));
+              // Server IDs are the source of truth for which entries exist
+              const merged = serverDeals.map((d) => {
+                const local = localMap[d.id];
+                // Keep local edits (stage, contact_method, sector, etc.) but use server as base
+                return local ? { ...d, stage: local.stage || d.stage, contact_method: local.contact_method || d.contact_method, sector: local.sector || d.sector, contact: local.contact || d.contact, source: local.source || d.source, raised: local.raised || d.raised, pitch: local.pitch || d.pitch, notes: local.notes || d.notes } : d;
+              });
+              // Also include any deals created locally (id > 1000000) that aren't on server
+              const serverIds = new Set(serverDeals.map((d) => d.id));
+              const localOnly = JSON.parse(savedDeals).filter((d) => d.id > 1000000 && !serverIds.has(d.id));
+              setDeals([...merged, ...localOnly]);
+            } else {
+              setDeals(serverDeals);
+            }
+            if (savedPeople) {
+              const localMap = Object.fromEntries(JSON.parse(savedPeople).map((p) => [p.id, p]));
+              const merged = serverPeople.map((p) => {
+                const local = localMap[p.id];
+                return local ? { ...p, tag: local.tag || p.tag, warmth: local.warmth || p.warmth, company: local.company || p.company, role: local.role || p.role, email: local.email || p.email, source: local.source || p.source, notes: local.notes || p.notes } : p;
+              });
+              const serverIds = new Set(serverPeople.map((p) => p.id));
+              const localOnly = JSON.parse(savedPeople).filter((p) => p.id > 1000000 && !serverIds.has(p.id));
+              setPeople([...merged, ...localOnly]);
+            } else {
+              setPeople(serverPeople);
+            }
+            setLoaded(true);
+          })
+          .catch(() => setLoaded(true));
       }, [authed]);
 
       // Persist changes to localStorage

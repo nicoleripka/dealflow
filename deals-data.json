@@ -155,7 +155,7 @@
       "raised": "",
       "date": "2026-03-02",
       "notes": "Co-founded by Mel Foody (ex-Meta VP / Head of Data Engineering Instagram & Threads, 7.5 yrs) and Peter Griggs. Mel prev Google (~10 yrs, Director BI & Analytics). Positioning against Slack. Early access stage. Dublin City University. Sunnyvale, CA. get-ping.com | linkedin.com/in/melfoody"
-    }
+    },
     {
       "id": 14,
       "name": "Wyre",
@@ -168,6 +168,19 @@
       "raised": "",
       "date": "2026-03-02",
       "notes": "Co-Founded by Aniketh Arvind (Co-Founder & CEO). ECE + CS @ Princeton. Prev Emergence AI (agentic AI/ML intern), Gradient @ Princeton (Builder-in-Residence). Sigma Xi. wyre.social | linkedin.com/in/aniketh-arvind"
+    },
+    {
+      "id": 15,
+      "name": "Jim Woodroffe Co",
+      "pitch": "AI for personal relationships and interactions",
+      "stage": "top_of_funnel",
+      "sector": "AI / Consumer",
+      "contact": "Jim Woodroffe",
+      "contact_method": "",
+      "source": "LinkedIn",
+      "raised": "",
+      "date": "2026-03-02",
+      "notes": "In stealth — co-founding with Samuel Gill. Jim prev Director of Engineering at Datadog. Visiting Expert at Antler, Mentor at ERA. Engineering leader across Series A–C scale. Oberlin College. SF-based. linkedin.com/in/jimwoodroffe"
     }
   ],
   "people": [
@@ -254,18 +267,6 @@
       "source": "LinkedIn",
       "date": "2026-03-02",
       "notes": "17 y/o. Founder & CEO @ Infinilearn — fantasy math game for 6-8th graders, used across 4 schools. SWE at Snap (building agentic AI systems). West Coast Lead at LocalHost. Built HDR VR headset with 1517 grant. Mission Viejo, CA. linkedin.com/in/theadrianm"
-    },
-    {
-      "id": 9,
-      "name": "Jim Woodroffe",
-      "tag": "founder",
-      "warmth": "new",
-      "company": "Stealth (AI for relationships)",
-      "role": "CTO / Co-Founder",
-      "email": "",
-      "source": "LinkedIn",
-      "date": "2026-03-02",
-      "notes": "In stealth — building AI for personal relationships and interactions, co-founding with Samuel Gill. Prev Director of Engineering at Datadog. Visiting Expert at Antler, Mentor at ERA. Engineering leader across Series A–C scale. Oberlin College. SF-based. linkedin.com/in/jimwoodroffe"
     }
   ]
 }
