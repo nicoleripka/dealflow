@@ -1028,17 +1028,8 @@
       const [people, setPeople] = useState([]);
       const [loaded, setLoaded] = useState(false);
 
-      // Data version — bump this to force a localStorage reset on next load
-      const DATA_VERSION = "v2";
-
       useEffect(() => {
         if (!authed) return;
-        // If data version changed, clear stale localStorage
-        if (localStorage.getItem("nr_data_version") !== DATA_VERSION) {
-          localStorage.removeItem("nr_deals");
-          localStorage.removeItem("nr_people");
-          localStorage.setItem("nr_data_version", DATA_VERSION);
-        }
         fetch("./deals-data.json")
           .then((r) => r.json())
           .then((data) => {
