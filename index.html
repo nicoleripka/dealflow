@@ -75,6 +75,8 @@
 
     const DEAL_STAGES = [
       { id: "top_of_funnel", label: "Top of Funnel", color: "#6366f1", bg: "#eef2ff" },
+      { id: "high_priority", label: "High Priority", color: "#dc2626", bg: "#fef2f2" },
+      { id: "learn_more", label: "Learn More", color: "#f97316", bg: "#fff7ed" },
       { id: "want_to_meet", label: "Want to Meet", color: "#a855f7", bg: "#faf5ff" },
       { id: "initial_pass", label: "Initial Pass / To Track", color: "#14b8a6", bg: "#f0fdfa" },
       { id: "tracking", label: "Tracking", color: "#0ea5e9", bg: "#f0f9ff" },
@@ -104,6 +106,14 @@
     ];
 
     const SOURCES = ["Email", "Text", "Intro \u2014 LP", "Intro \u2014 Fund", "Intro \u2014 Other", "Conference", "Twitter", "Twitter DM", "LinkedIn", "Cold Email", "Other"];
+
+    const CONTACT_METHODS = [
+      { id: "", label: "\u2014", color: "#cbd5e1", bg: "#f8fafc" },
+      { id: "warm_intro", label: "Warm Intro", color: "#10b981", bg: "#ecfdf5" },
+      { id: "linkedin_dm", label: "LinkedIn DM", color: "#0077b5", bg: "#f0f9ff" },
+      { id: "twitter_dm", label: "Twitter DM", color: "#1d9bf0", bg: "#eff6ff" },
+    ];
+    const CONTACT_METHOD_MAP = Object.fromEntries(CONTACT_METHODS.map((c) => [c.id, c]));
 
     const getLinkedinUrl = (notes) => {
       if (!notes) return null;
@@ -268,6 +278,15 @@
                   onBlur={(e) => (e.target.style.border = "1px solid transparent")} />
               </div>
 
+              {/* Contact Method */}
+              <div>
+                <div style={fieldLabel}>Contact Method</div>
+                <select value={form.contact_method || ""} onChange={(e) => update("contact_method", e.target.value)}
+                  style={{ ...fieldValue, cursor: "pointer" }}>
+                  {CONTACT_METHODS.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
+                </select>
+              </div>
+
               {/* Source + Raised */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                 <div>
@@ -312,7 +331,7 @@
     const AddDealModal = ({ onClose, onAdd }) => {
       const [form, setForm] = useState({
         name: "", pitch: "", stage: "top_of_funnel", sector: "", contact: "",
-        source: "Email", raised: "", notes: "",
+        contact_method: "", source: "Email", raised: "", notes: "",
       });
       const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
       return (
@@ -327,6 +346,9 @@
               </select>
               <input placeholder="Sector" value={form.sector} onChange={(e) => update("sector", e.target.value)} style={inputStyle} {...focusHandlers} />
               <input placeholder="Founders" value={form.contact} onChange={(e) => update("contact", e.target.value)} style={inputStyle} {...focusHandlers} />
+              <select value={form.contact_method} onChange={(e) => update("contact_method", e.target.value)} style={{ ...inputStyle, cursor: "pointer" }}>
+                {CONTACT_METHODS.map((c) => <option key={c.id} value={c.id}>{c.id ? c.label : "Contact method..."}</option>)}
+              </select>
               <select value={form.source} onChange={(e) => update("source", e.target.value)} style={{ ...inputStyle, cursor: "pointer" }}>
                 {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
@@ -459,13 +481,15 @@
       const STAGE_PRIORITY = {
         diligence: 0,
         deal_process: 1,
-        want_to_meet: 2,
-        tracking: 3,
-        top_of_funnel: 4,
-        closed: 5,
-        passed: 6,
-        to_pass: 7,
-        initial_pass: 8,
+        high_priority: 2,
+        learn_more: 3,
+        want_to_meet: 4,
+        tracking: 5,
+        top_of_funnel: 6,
+        closed: 7,
+        passed: 8,
+        to_pass: 9,
+        initial_pass: 10,
       };
 
       const filtered = useMemo(() => {
@@ -561,7 +585,7 @@
                 <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
                   <thead>
                     <tr style={{ borderBottom: "1px solid #f1f5f9" }}>
-                      {[{ key: "name", label: "Company" }, { key: "stage", label: "Stage" }, { key: null, label: "Sector" }, { key: null, label: "Founders" }, { key: null, label: "Source" }, { key: null, label: "Raising" }, { key: "date", label: "Date" }].map((col, i) => (
+                      {[{ key: "name", label: "Company" }, { key: "stage", label: "Status" }, { key: null, label: "Contact" }, { key: null, label: "Sector" }, { key: null, label: "Founders" }, { key: null, label: "Source" }, { key: null, label: "Raising" }, { key: "date", label: "Date" }].map((col, i) => (
                         <th key={i} onClick={() => col.key && toggleSort(col.key)} style={{
                           padding: "12px 16px", textAlign: "left", fontWeight: 600, fontSize: "11px",
                           color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em",
@@ -585,6 +609,10 @@
                           <SelectPill value={deal.stage} options={DEAL_STAGES} mapObj={DEAL_STAGE_MAP}
                             onChange={(v) => setDeals((prev) => prev.map((d) => d.id === deal.id ? { ...d, stage: v } : d))} />
                         </td>
+                        <td style={{ padding: "12px 16px" }} onClick={(e) => e.stopPropagation()}>
+                          <SelectPill value={deal.contact_method || ""} options={CONTACT_METHODS} mapObj={CONTACT_METHOD_MAP}
+                            onChange={(v) => setDeals((prev) => prev.map((d) => d.id === deal.id ? { ...d, contact_method: v } : d))} />
+                        </td>
                         <td style={{ padding: "12px 16px", color: "#334155", cursor: "text" }} onDoubleClick={(e) => startEdit(deal.id, "sector", deal.sector, e)}>
                           {isEd(deal.id, "sector") ? editInput("sector") : (deal.sector || <span style={{ color: "#cbd5e1", fontSize: "12px" }}>&mdash;</span>)}
                         </td>
@@ -604,7 +632,7 @@
                       </tr>
                     ))}
                     {filtered.length === 0 && (
-                      <tr><td colSpan={7} style={{ padding: "60px 40px", textAlign: "center", color: "#94a3b8" }}>
+                      <tr><td colSpan={8} style={{ padding: "60px 40px", textAlign: "center", color: "#94a3b8" }}>
                         {deals.length === 0
                           ? "No deals yet. Add one above or tell Claude about a deal."
                           : "No deals match your filters."}
@@ -812,7 +840,7 @@
                     </tr>
                   ))}
                   {filtered.length === 0 && (
-                    <tr><td colSpan={7} style={{ padding: "60px 40px", textAlign: "center", color: "#94a3b8" }}>
+                    <tr><td colSpan={8} style={{ padding: "60px 40px", textAlign: "center", color: "#94a3b8" }}>
                       {people.length === 0
                         ? "No people yet. Add one above or tell Claude about a contact."
                         : "No people match your filters."}
