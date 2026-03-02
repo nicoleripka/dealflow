@@ -122,8 +122,11 @@
 
     const getLinkedinUrl = (notes) => {
       if (!notes) return null;
-      const match = notes.match(/linkedin\.com\/in\/[\w-]+/);
-      return match ? "https://www." + match[0] : null;
+      const li = notes.match(/linkedin\.com\/in\/[\w-]+/);
+      if (li) return "https://www." + li[0];
+      const tw = notes.match(/(?:x\.com|twitter\.com)\/[\w-]+/);
+      if (tw) return "https://" + tw[0];
+      return null;
     };
 
     const DEAL_STAGE_MAP = Object.fromEntries(DEAL_STAGES.map((s) => [s.id, s]));
