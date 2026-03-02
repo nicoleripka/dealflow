@@ -876,15 +876,45 @@
 
       useEffect(() => {
         if (!authed) return;
-        fetch("./deals-data.json")
-          .then((r) => r.json())
-          .then((data) => {
-            setDeals(data.deals || []);
-            setPeople(data.people || []);
-            setLoaded(true);
-          })
-          .catch(() => setLoaded(true));
+        const savedDeals = localStorage.getItem("nr_deals");
+        const savedPeople = localStorage.getItem("nr_people");
+        if (savedDeals && savedPeople) {
+          setDeals(JSON.parse(savedDeals));
+          setPeople(JSON.parse(savedPeople));
+          setLoaded(true);
+          // Also fetch fresh data to merge any new entries from deploys
+          fetch("./deals-data.json")
+            .then((r) => r.json())
+            .then((data) => {
+              const localDeals = JSON.parse(savedDeals);
+              const localPeople = JSON.parse(savedPeople);
+              const localDealIds = new Set(localDeals.map((d) => d.id));
+              const localPeopleIds = new Set(localPeople.map((p) => p.id));
+              const newDeals = (data.deals || []).filter((d) => !localDealIds.has(d.id));
+              const newPeople = (data.people || []).filter((p) => !localPeopleIds.has(p.id));
+              if (newDeals.length > 0) setDeals((prev) => [...prev, ...newDeals]);
+              if (newPeople.length > 0) setPeople((prev) => [...prev, ...newPeople]);
+            })
+            .catch(() => {});
+        } else {
+          fetch("./deals-data.json")
+            .then((r) => r.json())
+            .then((data) => {
+              setDeals(data.deals || []);
+              setPeople(data.people || []);
+              setLoaded(true);
+            })
+            .catch(() => setLoaded(true));
+        }
       }, [authed]);
+
+      // Persist changes to localStorage
+      useEffect(() => {
+        if (loaded && deals.length > 0) localStorage.setItem("nr_deals", JSON.stringify(deals));
+      }, [deals, loaded]);
+      useEffect(() => {
+        if (loaded && people.length > 0) localStorage.setItem("nr_people", JSON.stringify(people));
+      }, [people, loaded]);
 
       if (!authed) return <AuthGate onAuth={() => setAuthed(true)} />;
 
