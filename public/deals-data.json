@@ -119,6 +119,18 @@
       "raised": "",
       "date": "2026-02-27",
       "notes": "Two products: Juries AI (simulate jurors for case strategy) and Judges AI (battle-test briefs against simulated sitting judges). Claims 82.1% accuracy. Serves AmLaw 10/50/100/200 firms. Founded by Big Law alumni. courtroom.ai"
+    },
+    {
+      "id": 11,
+      "name": "CompFly AI",
+      "pitch": "Solving the speed vs. safety paradox for the Agentic Era",
+      "stage": "top_of_funnel",
+      "sector": "AI / Compliance",
+      "contact": "Venkat Siva",
+      "source": "LinkedIn",
+      "raised": "",
+      "date": "2026-03-02",
+      "notes": "Founded by Venkat Siva (Co-Founder & CEO). Prev VP Vehicle Cloud, Big Data & AI at Rivian (~5 yrs), Head of Platform Engineering at Walmart Labs. Wharton. SF-based. linkedin.com/in/venkiz"
     }
   ],
   "people": [
