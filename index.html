@@ -1041,10 +1041,10 @@
             if (savedDeals) {
               const localMap = Object.fromEntries(JSON.parse(savedDeals).map((d) => [d.id, d]));
               // Server IDs are the source of truth for which entries exist
+              // Local edits (name changes, stage, etc.) override server values
               const merged = serverDeals.map((d) => {
                 const local = localMap[d.id];
-                // Keep local edits (stage, contact_method, sector, etc.) but use server as base
-                return local ? { ...d, stage: local.stage || d.stage, contact_method: local.contact_method || d.contact_method, sector: local.sector || d.sector, contact: local.contact || d.contact, source: local.source || d.source, raised: local.raised || d.raised, pitch: local.pitch || d.pitch, notes: local.notes || d.notes } : d;
+                return local ? { ...d, ...local } : d;
               });
               // Also include any deals created locally (id > 1000000) that aren't on server
               const serverIds = new Set(serverDeals.map((d) => d.id));
@@ -1057,7 +1057,7 @@
               const localMap = Object.fromEntries(JSON.parse(savedPeople).map((p) => [p.id, p]));
               const merged = serverPeople.map((p) => {
                 const local = localMap[p.id];
-                return local ? { ...p, tag: local.tag || p.tag, warmth: local.warmth || p.warmth, company: local.company || p.company, role: local.role || p.role, email: local.email || p.email, source: local.source || p.source, notes: local.notes || p.notes } : p;
+                return local ? { ...p, ...local } : p;
               });
               const serverIds = new Set(serverPeople.map((p) => p.id));
               const localOnly = JSON.parse(savedPeople).filter((p) => p.id > 1000000 && !serverIds.has(p.id));
