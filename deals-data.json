@@ -217,6 +217,18 @@
       "source": "LinkedIn",
       "date": "2026-03-02",
       "notes": "17 y/o. Founder & CEO @ Infinilearn — fantasy math game for 6-8th graders, used across 4 schools. SWE at Snap (building agentic AI systems). West Coast Lead at LocalHost. Built HDR VR headset with 1517 grant. Mission Viejo, CA. linkedin.com/in/theadrianm"
+    },
+    {
+      "id": 9,
+      "name": "Jim Woodroffe",
+      "tag": "founder",
+      "warmth": "new",
+      "company": "Stealth (AI for relationships)",
+      "role": "CTO / Co-Founder",
+      "email": "",
+      "source": "LinkedIn",
+      "date": "2026-03-02",
+      "notes": "In stealth — building AI for personal relationships and interactions, co-founding with Samuel Gill. Prev Director of Engineering at Datadog. Visiting Expert at Antler, Mentor at ERA. Engineering leader across Series A–C scale. Oberlin College. SF-based. linkedin.com/in/jimwoodroffe"
     }
   ]
 }
