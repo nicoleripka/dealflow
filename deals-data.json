@@ -157,6 +157,30 @@
       "source": "Twitter",
       "date": "2026-02-27",
       "notes": "Open-ended AI + RL researcher. Previously UCL CS + Meta FAIR, now Google DeepMind. Published Generative Data Refinement, JaxMARL, Rainbow Teaming. Based in Oxford. minch.co | @MinqiJiang"
+    },
+    {
+      "id": 4,
+      "name": "Aniketh Arvind",
+      "tag": "founder",
+      "warmth": "new",
+      "company": "Wyre",
+      "role": "Co-Founder & CEO",
+      "email": "",
+      "source": "LinkedIn",
+      "date": "2026-03-02",
+      "notes": "Building Wyre — first social platform optimized for IRL. ECE + CS @ Princeton. Prev Emergence AI (agentic AI/ML intern), Gradient @ Princeton (Builder-in-Residence). Sigma Xi. wyre.social | linkedin.com/in/aniketh-arvind"
+    },
+    {
+      "id": 5,
+      "name": "Sara Hooker",
+      "tag": "founder",
+      "warmth": "want_to_meet",
+      "company": "Adaption",
+      "role": "Founder",
+      "email": "",
+      "source": "Other",
+      "date": "2026-03-02",
+      "notes": "Building efficient AI that continually learns (betting against scaling). Prev VP of Research at Cohere (led Cohere Labs), Research Scientist at Google DeepMind. PhD CS at Mila (Hugo Larochelle, Aaron Courville). Kaggle ML Advisory Board, WEF AI council. Time Magazine most influential in AI. sarahooker.me"
     }
   ]
 }
