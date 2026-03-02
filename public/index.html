@@ -1028,25 +1028,33 @@
       const [people, setPeople] = useState([]);
       const [loaded, setLoaded] = useState(false);
 
+      // Data version — bump this to force a localStorage reset on next load
+      const DATA_VERSION = "v2";
+
       useEffect(() => {
         if (!authed) return;
+        // If data version changed, clear stale localStorage
+        if (localStorage.getItem("nr_data_version") !== DATA_VERSION) {
+          localStorage.removeItem("nr_deals");
+          localStorage.removeItem("nr_people");
+          localStorage.setItem("nr_data_version", DATA_VERSION);
+        }
         fetch("./deals-data.json")
           .then((r) => r.json())
           .then((data) => {
             const serverDeals = data.deals || [];
             const serverPeople = data.people || [];
-            // Merge localStorage edits on top of server data
+            // Merge: server is base truth, localStorage only preserves select UI edits
             const savedDeals = localStorage.getItem("nr_deals");
             const savedPeople = localStorage.getItem("nr_people");
             if (savedDeals) {
               const localMap = Object.fromEntries(JSON.parse(savedDeals).map((d) => [d.id, d]));
-              // Server IDs are the source of truth for which entries exist
-              // Local edits (name changes, stage, etc.) override server values
               const merged = serverDeals.map((d) => {
                 const local = localMap[d.id];
-                return local ? { ...d, ...local } : d;
+                if (!local) return d;
+                // Only keep local edits for these UI-changeable fields
+                return { ...d, stage: local.stage || d.stage, contact_method: local.contact_method || d.contact_method };
               });
-              // Also include any deals created locally (id > 1000000) that aren't on server
               const serverIds = new Set(serverDeals.map((d) => d.id));
               const localOnly = JSON.parse(savedDeals).filter((d) => d.id > 1000000 && !serverIds.has(d.id));
               setDeals([...merged, ...localOnly]);
@@ -1057,7 +1065,8 @@
               const localMap = Object.fromEntries(JSON.parse(savedPeople).map((p) => [p.id, p]));
               const merged = serverPeople.map((p) => {
                 const local = localMap[p.id];
-                return local ? { ...p, ...local } : p;
+                if (!local) return p;
+                return { ...p, tag: local.tag || p.tag, warmth: local.warmth || p.warmth };
               });
               const serverIds = new Set(serverPeople.map((p) => p.id));
               const localOnly = JSON.parse(savedPeople).filter((p) => p.id > 1000000 && !serverIds.has(p.id));
