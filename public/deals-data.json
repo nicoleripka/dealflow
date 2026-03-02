@@ -181,6 +181,30 @@
       "source": "Other",
       "date": "2026-03-02",
       "notes": "Building efficient AI that continually learns (betting against scaling). Prev VP of Research at Cohere (led Cohere Labs), Research Scientist at Google DeepMind. PhD CS at Mila (Hugo Larochelle, Aaron Courville). Kaggle ML Advisory Board, WEF AI council. Time Magazine most influential in AI. sarahooker.me"
+    },
+    {
+      "id": 6,
+      "name": "Adam Bhaloo",
+      "tag": "other",
+      "warmth": "want_to_meet",
+      "company": "National Design Studio (US Gov)",
+      "role": "Engineer",
+      "email": "",
+      "source": "Other",
+      "date": "2026-03-02",
+      "notes": "Building for the US government at the National Design Studio. Interests: product design, fullstack dev, molecular gastronomy. adambhaloo.com"
+    },
+    {
+      "id": 7,
+      "name": "Zachary Baker",
+      "tag": "founder",
+      "warmth": "new",
+      "company": "Terac",
+      "role": "Co-Founder",
+      "email": "zac@terac.com",
+      "source": "LinkedIn",
+      "date": "2026-03-02",
+      "notes": "Co-Founder @ Terac — specialized experts on-demand to power frontier research. Angel investor (a37, Nexa Labs, Clado, Shofo). Z Fellows. Prev ML Engineer at Radical Health, ML Researcher at MIT. UCL. SF-based. linkedin.com/in/zacharyrbaker"
     }
   ]
 }
