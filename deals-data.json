@@ -143,6 +143,18 @@
       "raised": "",
       "date": "2026-03-02",
       "notes": "⚡ NEED INTRO. Founded by Matthew Sims. Prev Principal AI Engineer at Spotter, Co-Founder Next Scene AI, Founding ML Engineer at Sudowrite, Visiting Research Scientist at Netflix. UC Berkeley. SF-based. linkedin.com/in/matthew-sims"
+    },
+    {
+      "id": 13,
+      "name": "Ping AI",
+      "pitch": "AI chat for teams — ask, decide, and do with your whole team there",
+      "stage": "top_of_funnel",
+      "sector": "AI / Collaboration / SaaS",
+      "contact": "Mel Foody",
+      "source": "LinkedIn",
+      "raised": "",
+      "date": "2026-03-02",
+      "notes": "Co-founded by Mel Foody (ex-Meta VP / Head of Data Engineering Instagram & Threads, 7.5 yrs) and Peter Griggs. Mel prev Google (~10 yrs, Director BI & Analytics). Positioning against Slack. Early access stage. Dublin City University. Sunnyvale, CA. get-ping.com | linkedin.com/in/melfoody"
     }
   ],
   "people": [
