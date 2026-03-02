@@ -156,6 +156,19 @@
       "date": "2026-03-02",
       "notes": "Co-founded by Mel Foody (ex-Meta VP / Head of Data Engineering Instagram & Threads, 7.5 yrs) and Peter Griggs. Mel prev Google (~10 yrs, Director BI & Analytics). Positioning against Slack. Early access stage. Dublin City University. Sunnyvale, CA. get-ping.com | linkedin.com/in/melfoody"
     }
+    {
+      "id": 14,
+      "name": "Wyre",
+      "pitch": "First social platform optimized for IRL",
+      "stage": "top_of_funnel",
+      "sector": "Consumer Social",
+      "contact": "Aniketh Arvind",
+      "contact_method": "",
+      "source": "LinkedIn",
+      "raised": "",
+      "date": "2026-03-02",
+      "notes": "Co-Founded by Aniketh Arvind (Co-Founder & CEO). ECE + CS @ Princeton. Prev Emergence AI (agentic AI/ML intern), Gradient @ Princeton (Builder-in-Residence). Sigma Xi. wyre.social | linkedin.com/in/aniketh-arvind"
+    }
   ],
   "people": [
     {
@@ -193,18 +206,6 @@
       "source": "Twitter",
       "date": "2026-02-27",
       "notes": "Open-ended AI + RL researcher. Previously UCL CS + Meta FAIR, now Google DeepMind. Published Generative Data Refinement, JaxMARL, Rainbow Teaming. Based in Oxford. minch.co | @MinqiJiang"
-    },
-    {
-      "id": 4,
-      "name": "Aniketh Arvind",
-      "tag": "founder",
-      "warmth": "new",
-      "company": "Wyre",
-      "role": "Co-Founder & CEO",
-      "email": "",
-      "source": "LinkedIn",
-      "date": "2026-03-02",
-      "notes": "Building Wyre — first social platform optimized for IRL. ECE + CS @ Princeton. Prev Emergence AI (agentic AI/ML intern), Gradient @ Princeton (Builder-in-Residence). Sigma Xi. wyre.social | linkedin.com/in/aniketh-arvind"
     },
     {
       "id": 5,
