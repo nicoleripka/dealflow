@@ -402,6 +402,19 @@
       "raised": "",
       "date": "2026-03-02",
       "notes": "AI and tech to improve expense structure and underwriting, but uniquely focused on protecting businesses from lawsuits — the #1 problem. AI native property and casualty insurance carrier for brick and mortar, starting as a tech-enabled MGA for nightlife. | linkedin.com/in/dhruvchopra | linkedin.com/in/vinai-rachakonda-a41927117"
+    },
+    {
+      "id": 33,
+      "name": "Safekey Lab",
+      "pitch": "Safety layer for AI — input firewall that stops PII leaks and prompt-injection attacks for LLMs, agents, and RAG",
+      "stage": "top_of_funnel",
+      "sector": "AI / Security",
+      "contact": "Yang Sukin",
+      "contact_method": "",
+      "source": "Dorm Room Fund",
+      "raised": "",
+      "date": "2026-03-02",
+      "notes": "safekeylab.com | Solo technical founder. Tracks full lifecycle of sensitive data across inputs, vector stores, logs, and agent tool calls. In-house detectors deliver high-accuracy PII redaction and prompt-injection blocking with sub-20ms latency. BYOC for strict compliance. Pilots in healthcare and legal. | linkedin.com/in/yang-sukin"
     }
   ],
   "people": [
