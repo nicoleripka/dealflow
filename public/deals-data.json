@@ -350,6 +350,19 @@
       "raised": "",
       "date": "2026-03-02",
       "notes": "nuvalla.com | linkedin.com/in/ryandengg | linkedin.com/in/dingfanzheng"
+    },
+    {
+      "id": 29,
+      "name": "Hegstad & Mikhail Biotech",
+      "pitch": "Foundational AI model for non-clinical biology — mixture-of-experts approach with dedicated agents per domain",
+      "stage": "top_of_funnel",
+      "sector": "AI / Biotech",
+      "contact": "Joshua Hegstad, Elia Mikhail",
+      "contact_method": "",
+      "source": "Dorm Room Fund",
+      "raised": "",
+      "date": "2026-03-02",
+      "notes": "Built foundational model trained exclusively on non-clinical biology data. Mixture-of-experts: dedicated AI agents for genomics, imaging, proteomics, etc. Full-stack AI solution unifying non-clinical research workflows with local infrastructure for data security. Working with Allen Institute, Crinetics, Johns Hopkins, HMS and others. | linkedin.com/in/joshua-hegstad-976ba2242 | linkedin.com/in/elia-mikhail"
     }
   ],
   "people": [
