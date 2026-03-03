@@ -109,6 +109,22 @@
 
     const SOURCES = ["Email", "Text", "Intro \u2014 LP", "Intro \u2014 Fund", "Intro \u2014 Other", "Conference", "Twitter", "Twitter DM", "LinkedIn", "Cold Email", "Other"];
 
+    const SourceSelect = ({ value, onChange, style }) => {
+      const isCustom = value && !SOURCES.includes(value);
+      const [editing, setEditing] = useState(isCustom);
+      if (editing || isCustom) {
+        return React.createElement("div", { style: { display: "flex", gap: "4px", alignItems: "center" } },
+          React.createElement("input", { value: value || "", onChange: (e) => onChange(e.target.value), placeholder: "Type source...", autoFocus: true, style: { ...style, flex: 1 },
+            onFocus: (e) => { e.target.style.border = "1px solid #e2e8f0"; } }),
+          React.createElement("button", { onClick: () => { setEditing(false); if (!value) onChange("Other"); }, style: { background: "none", border: "1px solid #e2e8f0", borderRadius: "6px", padding: "4px 8px", cursor: "pointer", fontSize: "11px", color: "#94a3b8", whiteSpace: "nowrap" } }, "\u2190 list")
+        );
+      }
+      return React.createElement("select", { value: value || "Other", onChange: (e) => { if (e.target.value === "__custom__") { setEditing(true); onChange(""); } else { onChange(e.target.value); } }, style: { ...style, cursor: "pointer" } },
+        SOURCES.map((s) => React.createElement("option", { key: s, value: s }, s)),
+        React.createElement("option", { key: "__custom__", value: "__custom__" }, "Custom...")
+      );
+    };
+
     const CONTACT_METHODS = [
       { id: "", label: "\u2014", color: "#cbd5e1", bg: "#f8fafc" },
       { id: "not_yet", label: "Not Yet", color: "#f59e0b", bg: "#fffbeb" },
@@ -299,10 +315,7 @@
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                 <div>
                   <div style={fieldLabel}>Source</div>
-                  <select value={form.source} onChange={(e) => update("source", e.target.value)}
-                    style={{ ...fieldValue, cursor: "pointer" }}>
-                    {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
+                  <SourceSelect value={form.source} onChange={(v) => update("source", v)} style={fieldValue} />
                 </div>
                 <div>
                   <div style={fieldLabel}>Raising</div>
@@ -357,9 +370,7 @@
               <select value={form.contact_method} onChange={(e) => update("contact_method", e.target.value)} style={{ ...inputStyle, cursor: "pointer" }}>
                 {CONTACT_METHODS.map((c) => <option key={c.id} value={c.id}>{c.id ? c.label : "Contact method..."}</option>)}
               </select>
-              <select value={form.source} onChange={(e) => update("source", e.target.value)} style={{ ...inputStyle, cursor: "pointer" }}>
-                {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
+              <SourceSelect value={form.source} onChange={(v) => update("source", v)} style={inputStyle} />
               <input placeholder="Amount raised" value={form.raised} onChange={(e) => update("raised", e.target.value)} style={inputStyle} {...focusHandlers} />
               <textarea placeholder="Notes" value={form.notes} onChange={(e) => update("notes", e.target.value)} rows={3} style={{ ...inputStyle, resize: "vertical" }} {...focusHandlers} />
             </div>
@@ -399,9 +410,7 @@
                 <input placeholder="Role / Title" value={form.role} onChange={(e) => update("role", e.target.value)} style={inputStyle} {...focusHandlers} />
               </div>
               <input placeholder="Email" value={form.email} onChange={(e) => update("email", e.target.value)} style={inputStyle} {...focusHandlers} />
-              <select value={form.source} onChange={(e) => update("source", e.target.value)} style={{ ...inputStyle, cursor: "pointer" }}>
-                {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
+              <SourceSelect value={form.source} onChange={(v) => update("source", v)} style={inputStyle} />
               <textarea placeholder="Notes" value={form.notes} onChange={(e) => update("notes", e.target.value)} rows={3} style={{ ...inputStyle, resize: "vertical" }} {...focusHandlers} />
             </div>
             <div style={{ display: "flex", gap: "10px", marginTop: "20px", justifyContent: "flex-end" }}>
@@ -789,10 +798,7 @@
               {/* Source */}
               <div>
                 <div style={fieldLabel}>Source</div>
-                <select value={form.source} onChange={(e) => update("source", e.target.value)}
-                  style={{ ...fieldValue, cursor: "pointer" }}>
-                  {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
-                </select>
+                <SourceSelect value={form.source} onChange={(v) => update("source", v)} style={fieldValue} />
               </div>
 
               {/* Notes */}
