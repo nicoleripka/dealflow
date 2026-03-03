@@ -255,7 +255,7 @@
       "sector": "AI",
       "contact": "",
       "contact_method": "",
-      "source": "Other",
+      "source": "Dorm Room Fund",
       "raised": "",
       "date": "2026-03-02",
       "notes": "miniboss.ai"
@@ -268,7 +268,7 @@
       "sector": "AI / Healthcare",
       "contact": "",
       "contact_method": "",
-      "source": "Other",
+      "source": "Dorm Room Fund",
       "raised": "",
       "date": "2026-03-02",
       "notes": "forithmus.com"
@@ -281,7 +281,7 @@
       "sector": "AI / Data",
       "contact": "",
       "contact_method": "",
-      "source": "Other",
+      "source": "Dorm Room Fund",
       "raised": "",
       "date": "2026-03-02",
       "notes": "nyne.ai"
@@ -294,7 +294,7 @@
       "sector": "AI",
       "contact": "",
       "contact_method": "",
-      "source": "Other",
+      "source": "Dorm Room Fund",
       "raised": "",
       "date": "2026-03-02",
       "notes": "mitosite.ai"
@@ -307,7 +307,7 @@
       "sector": "AI / Fintech",
       "contact": "",
       "contact_method": "",
-      "source": "Other",
+      "source": "Dorm Room Fund",
       "raised": "",
       "date": "2026-03-02",
       "notes": "gettalisman.com"
@@ -320,7 +320,7 @@
       "sector": "FoodTech / Impact",
       "contact": "Kyaw Naing, Siam Hossain",
       "contact_method": "",
-      "source": "Other",
+      "source": "Dorm Room Fund",
       "raised": "",
       "date": "2026-03-02",
       "notes": "foodbridge.me | Saving businesses money using tax automation and maximizing food donation to nonprofits. Working with major franchises, providing optimization algorithms to maximize donations and minimize waste. Tracking donations, tax benefits, and easy delivery to nonprofits — creating a marketplace for businesses to connect with nonprofits. | linkedin.com/in/kyaw-naing | linkedin.com/in/siamhossain1"
@@ -333,10 +333,23 @@
       "sector": "PropTech / AI",
       "contact": "Jim Yang, Avery Alchek",
       "contact_method": "",
-      "source": "Other",
+      "source": "Dorm Room Fund",
       "raised": "",
       "date": "2026-03-02",
       "notes": "fairappeal.com | AI-native end-to-end property tax appeal automation. Agents handle repetitive county-specific work, keeping costs low to profitably serve the long tail of lower-value homes that law firms ignore. Software-first rather than people-heavy. Bootstrapped and profitable since day one. Advantage compounds year over year with local government relationships and repeat customers. | linkedin.com/in/jimyang9 | linkedin.com/in/averyalchek"
+    },
+    {
+      "id": 28,
+      "name": "Nuvalla",
+      "pitch": "Commit and undo layer for AI agents — intercepts tool calls, routes risky writes as Work PRs, and reverts mistakes across SaaS",
+      "stage": "top_of_funnel",
+      "sector": "AI / DevTools",
+      "contact": "Ryan Deng, Dingfan Zheng",
+      "contact_method": "",
+      "source": "Dorm Room Fund",
+      "raised": "",
+      "date": "2026-03-02",
+      "notes": "nuvalla.com | linkedin.com/in/ryandengg | linkedin.com/in/dingfanzheng"
     }
   ],
   "people": [
