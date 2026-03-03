@@ -259,6 +259,58 @@
       "raised": "",
       "date": "2026-03-02",
       "notes": "miniboss.ai"
+    },
+    {
+      "id": 22,
+      "name": "Forithmus",
+      "pitch": "Foundation models for medical imaging",
+      "stage": "top_of_funnel",
+      "sector": "AI / Healthcare",
+      "contact": "",
+      "contact_method": "",
+      "source": "Other",
+      "raised": "",
+      "date": "2026-03-02",
+      "notes": "forithmus.com"
+    },
+    {
+      "id": 23,
+      "name": "Nyne",
+      "pitch": "Real-time people and business intent data",
+      "stage": "top_of_funnel",
+      "sector": "AI / Data",
+      "contact": "",
+      "contact_method": "",
+      "source": "Other",
+      "raised": "",
+      "date": "2026-03-02",
+      "notes": "nyne.ai"
+    },
+    {
+      "id": 24,
+      "name": "Mitosite",
+      "pitch": "",
+      "stage": "top_of_funnel",
+      "sector": "AI",
+      "contact": "",
+      "contact_method": "",
+      "source": "Other",
+      "raised": "",
+      "date": "2026-03-02",
+      "notes": "mitosite.ai"
+    },
+    {
+      "id": 25,
+      "name": "Talisman",
+      "pitch": "AI-powered accounting and bookkeeping practice management",
+      "stage": "top_of_funnel",
+      "sector": "AI / Fintech",
+      "contact": "",
+      "contact_method": "",
+      "source": "Other",
+      "raised": "",
+      "date": "2026-03-02",
+      "notes": "gettalisman.com"
     }
   ],
   "people": [
