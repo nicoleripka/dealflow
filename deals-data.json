@@ -363,6 +363,19 @@
       "raised": "",
       "date": "2026-03-02",
       "notes": "Built foundational model trained exclusively on non-clinical biology data. Mixture-of-experts: dedicated AI agents for genomics, imaging, proteomics, etc. Full-stack AI solution unifying non-clinical research workflows with local infrastructure for data security. Working with Allen Institute, Crinetics, Johns Hopkins, HMS and others. | linkedin.com/in/joshua-hegstad-976ba2242 | linkedin.com/in/elia-mikhail"
+    },
+    {
+      "id": 30,
+      "name": "Spolia Stone",
+      "pitch": "Faire for building materials — buying stone, tile, cabinets and more, modernized",
+      "stage": "top_of_funnel",
+      "sector": "Marketplace / Construction",
+      "contact": "C. Peppelman, Lexi DT",
+      "contact_method": "",
+      "source": "Dorm Room Fund",
+      "raised": "",
+      "date": "2026-03-02",
+      "notes": "spoliastone.com | linkedin.com/in/cpeppelman | linkedin.com/in/lexidt"
     }
   ],
   "people": [
