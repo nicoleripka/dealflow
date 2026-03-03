@@ -415,6 +415,19 @@
       "raised": "",
       "date": "2026-03-02",
       "notes": "safekeylab.com | Solo technical founder. Tracks full lifecycle of sensitive data across inputs, vector stores, logs, and agent tool calls. In-house detectors deliver high-accuracy PII redaction and prompt-injection blocking with sub-20ms latency. BYOC for strict compliance. Pilots in healthcare and legal. | linkedin.com/in/yang-sukin"
+    },
+    {
+      "id": 34,
+      "name": "Cerberus Security",
+      "pitch": "API security for AI agents — don't defend the agent itself, defend the APIs the agents rely on",
+      "stage": "top_of_funnel",
+      "sector": "AI / Security",
+      "contact": "Griffin Potrock, Sarah Casella",
+      "contact_method": "",
+      "source": "Dorm Room Fund",
+      "raised": "",
+      "date": "2026-03-02",
+      "notes": "cerberussecurity.ai | linkedin.com/in/griffinpotrock | linkedin.com/in/sarah-casella-781a21114"
     }
   ],
   "people": [
